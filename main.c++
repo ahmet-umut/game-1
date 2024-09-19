@@ -100,13 +100,17 @@ int main() {
 						break;
 					}
 				case ButtonPress:
+					if (mode==debugmode)	cout << "button press" << event.xbutton.x << " " << event.xbutton.y << "\n";
 					switch (event.xbutton.button)
 					{
 					case 1:  // Left mouse button
 						select(event.xbutton.x, event.xbutton.y);
 						break;
+					case 2:  // Middle mouse button
+						if (Agent::selagent)	Agent::selagent->attack();
+						break;
 					case 3:  // Right mouse button
-						if (Agent::selagent)	cout << "Task created\n", Agent::selagent->task = new Task(*Agent::selagent, event.xbutton.x, event.xbutton.y);
+						if (Agent::selagent)	Agent::selagent->task = new Task(*Agent::selagent, event.xbutton.x, event.xbutton.y);
 						break;
 					
 					default:

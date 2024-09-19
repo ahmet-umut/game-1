@@ -21,13 +21,8 @@ public:
 
 		XDrawPoint(display, window, gc, position.x, position.y);
 
-		/* int arrow_length = 10;
-		int arrow_x = position.x + arrow_length * cos(direction);
-		int arrow_y = position.y + arrow_length * sin(direction);
-		XDrawLine(display, window, gc, position.x, position.y, arrow_x, arrow_y); */
-
 		// Draw the weapon held by the right hand
-		Vector right_hand = position + Vector::fromPolar(10, direction);
+		Vector right_hand = position + Vector::fromPolar(10, direction+M_PI/2) + Vector::fromPolar(weaponpo, direction);
 		int weapon_length = 15;
 		Vector weapon = right_hand + Vector::fromPolar(weapon_length, direction);
 		XDrawLine(display, window, gc, right_hand.x, right_hand.y, weapon.x, weapon.y);
@@ -39,5 +34,6 @@ public:
 	{
 		position = position+velocity;
 		if (task)	task->execute();
+		if (weaponpo>0)	weaponpo--;
 	}
 };

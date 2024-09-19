@@ -30,4 +30,8 @@ public:
     {
         return (agent.position + -position).length();
     }
+	virtual void attack()
+	{
+		weaponpo+=10;
+	}
 };
