@@ -1,6 +1,6 @@
 #pragma once
-#include "task inte.hh"
 #include "agent inte.hh"
+#include "task inte.hh"
 
 class Agent : public IAgent
 {
@@ -35,5 +35,11 @@ public:
 		position = position+velocity;
 		if (task)	task->execute();
 		if (weaponpo>0)	weaponpo--;
+	}
+
+	virtual void assign(float x, float y)
+	{
+		if (task)	task->goal = {x,y};
+		else task = new Task(*this, x, y);
 	}
 };

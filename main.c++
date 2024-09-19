@@ -1,5 +1,5 @@
-#include "agent.hh"
 #include "task.hh"
+#include "agent.hh"
 
 #define noagents 2
 Agent agents[noagents];
@@ -110,7 +110,10 @@ int main() {
 						if (Agent::selagent)	Agent::selagent->attack();
 						break;
 					case 3:  // Right mouse button
-						if (Agent::selagent)	Agent::selagent->task = new Task(*Agent::selagent, event.xbutton.x, event.xbutton.y);
+						if (Agent::selagent)
+						{
+							Agent::selagent->assign(event.xbutton.x, event.xbutton.y);
+						}
 						break;
 					
 					default:
@@ -141,6 +144,8 @@ int main() {
 
 		#define msperframe 1000/60
 		usleep(msperframe*1000);
+
+		agents[0].assign(agents[1].position.x, agents[1].position.y);
 
 		for (Agent& agent0 : agents)
 		{

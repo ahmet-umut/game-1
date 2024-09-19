@@ -1,11 +1,13 @@
 #pragma once
-#include "task.hh"
-#include "agent.hh"
+#include "task inte.hh"
+#include "agent inte.hh"
 
 class Task : virtual public ITask
 {
 public:
     using ITask::ITask;
+    Task(IAgent&agent, IAgent&target) : ITask(agent, target.position.x, target.position.y)	{}
+
 	void execute()
 	{
 		//move towards the goal

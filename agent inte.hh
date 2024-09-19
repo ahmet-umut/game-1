@@ -9,7 +9,7 @@ public:
     inline static IAgent*selagent = nullptr;
 	Vector position, velocity;	float direction;	//direction is in radians
 	float weaponpo=0;
-    ITask*task=nullptr;
+	ITask*task = nullptr;
     
     IAgent() {}
 	IAgent(float velocity) : velocity({velocity,velocity})
@@ -34,4 +34,5 @@ public:
 	{
 		weaponpo+=10;
 	}
+	virtual void assign(float x, float y)=0;
 };
