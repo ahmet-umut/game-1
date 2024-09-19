@@ -1,5 +1,4 @@
-#include "task.hh"
-#include "agent.hh"
+#include "classes.hh"
 
 #define noagents 2
 Agent agents[noagents];
@@ -112,7 +111,16 @@ int main() {
 					case 3:  // Right mouse button
 						if (Agent::selagent)
 						{
-							Agent::selagent->assign(event.xbutton.x, event.xbutton.y);
+							for (Agent& agent : agents)	if (event.xbutton.x > agent.position.x-radius && event.xbutton.x < agent.position.x+radius && event.xbutton.y > agent.position.y-radius && event.xbutton.y < agent.position.y+radius)
+							{
+								Task *task = new Task(Agent::selagent, &agent);
+								Agent::selagent->assign(task);
+								delete task;
+								break;
+							}
+							Task *task = new Task(Agent::selagent, event.xbutton.x, event.xbutton.y);
+							Agent::selagent->assign(task);
+							delete task;
 						}
 						break;
 					
@@ -145,7 +153,7 @@ int main() {
 		#define msperframe 1000/60
 		usleep(msperframe*1000);
 
-		agents[0].assign(agents[1].position.x, agents[1].position.y);
+		//agents[0].assign(agents[1].position.x, agents[1].position.y);
 
 		for (Agent& agent0 : agents)
 		{
@@ -170,5 +178,7 @@ int main() {
 
 	return 0;
 }
-/*c
+/*
+g++ main.c++ -o main -lX11
+./main
 */
