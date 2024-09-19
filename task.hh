@@ -14,6 +14,7 @@ public:
 		{
 			agent->velocity.x = (goal.x-agent->position.x)/100;
 			agent->velocity.y = (goal.y-agent->position.y)/100;
+			agent->direction = atan2(goal.y-agent->position.y, goal.x-agent->position.x);
 		}
 		//else	active = false;
 	}

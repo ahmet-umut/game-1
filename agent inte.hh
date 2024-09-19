@@ -7,7 +7,8 @@ class IAgent
 {
 public:
     inline static IAgent*selagent = nullptr;
-	Vector position, velocity;
+	Vector position, velocity;	float direction;	//direction is in radians
+	float weaponpo=0;
     ITask*task=nullptr;
     
     IAgent() {}
@@ -27,6 +28,6 @@ public:
     virtual void execute() = 0;
     virtual float distance(IAgent&agent)
     {
-        return (agent.position - position).length();
+        return (agent.position + -position).length();
     }
 };

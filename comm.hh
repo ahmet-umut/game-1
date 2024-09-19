@@ -7,19 +7,28 @@ public:
     Vector() {}
     Vector(float x, float y) : x(x), y(y) {}
 
-    void operator+=(const Vector&vector)
+    static Vector fromPolar(float length, float angle)
     {
-        x += vector.x;
-        y += vector.y;
+        return {length*cosf(angle), length*sinf(angle)};
     }
-    Vector operator-(const Vector&vector)
+
+    Vector operator+(const Vector&vector)
     {
-        return {x-vector.x, y-vector.y};
+        return {x+vector.x, y+vector.y};
+    }
+    Vector operator-()
+    {
+        return {-x, -y};
+    }
+    Vector operator*(const float&scalar)
+    {
+        return {x*scalar, y*scalar};
     }
     Vector operator/(const float&scalar)
     {
         return {x/scalar, y/scalar};
     }
+
     float length()
     {
         return sqrtf(x*x + y*y);

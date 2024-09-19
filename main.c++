@@ -63,7 +63,7 @@ int main() {
 		if (event.type==KeyPress)	break;
 	}
 
-	enum {debugmode, gamemode} mode = debugmode;
+	enum {debugmode, gamemode} mode = gamemode;
 	short int x,y;
 	while (running) {
 		if (mode==debugmode || XPending(display))	//for every frame, handle up to one event || if in debug mode, handle exactly 1 event.
@@ -147,10 +147,9 @@ int main() {
 			float distance;
 			for (Agent& agent1 : agents)	if (&agent0!=&agent1)	if ((distance = agent0.distance(agent1)) < 2*radius)
 			{
-				cout << "Collision\n" << distance << '\n';
-				Vector posdif01 = agent1.position - agent0.position, posdif10 = agent0.position - agent1.position;
-				agent0.position += posdif10 / distance / (1 / (radius - distance/2));
-				agent1.position += posdif01 / distance / (1 / (radius - distance/2));
+				Vector posdif01 = agent1.position +- agent0.position;
+				agent0.position = agent0.position +- posdif01 / distance * (radius - distance/2);
+				agent1.position = agent1.position +  posdif01 / distance * (radius - distance/2);
 			}
 		}
 	}
@@ -162,7 +161,5 @@ int main() {
 
 	return 0;
 }
-/*
-g++ main.c++ -o main -lX11
-./main
+/*c
 */
