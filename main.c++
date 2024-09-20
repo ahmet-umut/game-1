@@ -111,16 +111,22 @@ int main() {
 					case 3:  // Right mouse button
 						if (Agent::selagent)
 						{
-							for (Agent& agent : agents)	if (event.xbutton.x > agent.position.x-radius && event.xbutton.x < agent.position.x+radius && event.xbutton.y > agent.position.y-radius && event.xbutton.y < agent.position.y+radius)
-							{
-								Task *task = new Task(Agent::selagent, &agent);
-								Agent::selagent->assign(task);
-								delete task;
-								break;
-							}
-							Task *task = new Task(Agent::selagent, event.xbutton.x, event.xbutton.y);
-							Agent::selagent->assign(task);
-							delete task;
+							for (Agent& agent : agents)
+								if (event.xbutton.x > agent.position.x-radius && event.xbutton.x < agent.position.x+radius && event.xbutton.y > agent.position.y-radius && event.xbutton.y < agent.position.y+radius)
+								{
+									Task *task = new Task(Agent::selagent, &agent);
+									Agent::selagent->assign(task);
+									delete task;
+									cout << "assigned attack task\n";
+									break;
+								}
+								else
+								{
+									Task *task = new Task(Agent::selagent, event.xbutton.x, event.xbutton.y);
+									Agent::selagent->assign(task);
+									delete task;
+									cout << "assigned go task\n";
+								}
 						}
 						break;
 					

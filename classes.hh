@@ -5,20 +5,21 @@ class Task : public ITask
 public:
 	Vector goal;
 	IAgent *agent, *target;
-	enum {go, attack} type = go;
+	enum {go, attack} type;
 	bool active=true;
 
 	Task() : active(false) {}
-	Task(IAgent*agent, float x, float y) : agent(agent), goal({x,y}) {}
-	Task(IAgent*agent, IAgent*target) : agent(agent), target(target) {}
+	Task(IAgent*agent, float x, float y) : agent(agent), goal({x,y}), type(go) {}
+	Task(IAgent*agent, IAgent*target) : agent(agent), target(target), type(attack) {}
 
 	void execute()
 	{
+		if (!active)	return;
+		#define maxerror (radius<<2)
 		switch (type)
 		{
 		case go:	//move towards the goal
-			#define maxerror 1
-			if (active)	if (agent->distance(goal) > maxerror)
+			if (agent->distance(goal) > maxerror)
 			{
 				agent->velocity = (goal +- agent->position)/100;
 				agent->direction = atan2(goal.y-agent->position.y, goal.x-agent->position.x);
@@ -26,14 +27,15 @@ public:
 			//else	active = false;
 			break;
 		case attack:	//attack the target
-			if (active)	if (agent->distance(*target) > 10)
+			if (agent->distance(*target) > maxerror)
 			{
-				agent->velocity.x = (target->position.x-agent->position.x)/100;
-				agent->velocity.y = (target->position.y-agent->position.y)/100;
 				agent->direction = atan2(target->position.y-agent->position.y, target->position.x-agent->position.x);
+				agent->velocity = ((*target).position +- agent->position)/100;
 			}
 			else
 			{
+				agent->direction = atan2(target->position.y-agent->position.y, target->position.x-agent->position.x)-.4;
+				agent->velocity = {0,0};
 				agent->attack();
 			}
 			break;
@@ -76,7 +78,9 @@ public:
 	}
 	void attack()
 	{
-		weaponpo+=10;
+		// Simulate a weapon swing by oscillating the weapon position
+		weaponpo += 0.2; // Increment weapon position for a faster swing effect
+		if (weaponpo > 1.0 || weaponpo < -1.0) weaponpo = -weaponpo; // Reverse direction after reaching the swing limit
 	}
 	void assign(Task*task)
 	{
@@ -86,7 +90,6 @@ public:
 	{
 		position = position+velocity;
 		task.execute();
-		if (weaponpo>0)	weaponpo--;
 	}
 	virtual float distance(Vector&vector)
 	{
