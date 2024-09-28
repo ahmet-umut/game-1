@@ -4,13 +4,13 @@ class Task : public ITask
 {
 public:
 	Vector goal;
-	IAgent *agent, *target;
+	ISoldier *soldier, *target;
 	enum {go, attack} type;
 	bool active=true;
 
 	Task() : active(false) {}
-	Task(IAgent*agent, float x, float y) : agent(agent), goal({x,y}), type(go) {}
-	Task(IAgent*agent, IAgent*target) : agent(agent), target(target), type(attack) {}
+	Task(ISoldier*soldier, float x, float y) : soldier(soldier), goal({x,y}), type(go) {}
+	Task(ISoldier*soldier, ISoldier*target) : soldier(soldier), target(target), type(attack) {}
 
 	void execute()
 	{
@@ -19,24 +19,24 @@ public:
 		switch (type)
 		{
 		case go:	//move towards the goal
-			if (agent->distance(goal) > maxerror)
+			if (soldier->distance(goal) > maxerror)
 			{
-				agent->velocity = (goal +- agent->position)/100;
-				agent->direction = atan2(goal.y-agent->position.y, goal.x-agent->position.x);
+				soldier->velocity = (goal +- soldier->position)/100;
+				soldier->direction = atan2(goal.y-soldier->position.y, goal.x-soldier->position.x);
 			}
 			//else	active = false;
 			break;
 		case attack:	//attack the target
-			if (agent->distance(*target) > maxerror)
+			if (soldier->distance(*target) > maxerror)
 			{
-				agent->direction = atan2(target->position.y-agent->position.y, target->position.x-agent->position.x);
-				agent->velocity = ((*target).position +- agent->position)/100;
+				soldier->direction = atan2(target->position.y-soldier->position.y, target->position.x-soldier->position.x);
+				soldier->velocity = ((*target).position +- soldier->position)/100;
 			}
 			else
 			{
-				agent->direction = atan2(target->position.y-agent->position.y, target->position.x-agent->position.x)-.4;
-				agent->velocity = {0,0};
-				agent->attack();
+				soldier->direction = atan2(target->position.y-soldier->position.y, target->position.x-soldier->position.x)-.4;
+				soldier->velocity = {0,0};
+				soldier->attack();
 			}
 			break;
 		
@@ -47,15 +47,17 @@ public:
 	}
 };
 
-class Agent : public IAgent
+class Soldier : public ISoldier
 {
 public:
-	inline static Agent*selagent = nullptr;
+	inline static Soldier*selsoldier = nullptr;
 	float weaponpo=0;
 	Task task;
+	unsigned char defence=0;	//used in Soldier::gethit() function.
+	unsigned char army=0;
 
-	Agent() {}
-	Agent(float velocity) : IAgent(velocity)
+	Soldier() {}
+	Soldier(float velocity) : ISoldier(velocity)
 	{
 		position.x = rand()%800;
 		position.y = rand()%600;
@@ -63,16 +65,16 @@ public:
 
 	void draw()
 	{
-		if (this==selagent)	XSetForeground(display, gc, secolor);
+		if (this==selsoldier)	XSetForeground(display, gc, secolor);
 		else	XSetForeground(display, gc, agcolor);
 
 		XDrawPoint(display, window, gc, position.x, position.y);
 
 		// Draw the weapon held by the right hand
-		Vector right_hand = position + Vector::fromPolar(10, direction+M_PI/2) + Vector::fromPolar(weaponpo, direction);
-		int weapon_length = 15;
-		Vector weapon = right_hand + Vector::fromPolar(weapon_length, direction);
-		XDrawLine(display, window, gc, right_hand.x, right_hand.y, weapon.x, weapon.y);
+		Vector weaponst = position + Vector::fromPolar(10, direction+M_PI/2) + Vector::fromPolar(weaponpo, direction);
+		#define weaponle 15
+		Vector weaponen = weaponst + Vector::fromPolar(weaponle, direction);
+		XDrawLine(display, window, gc, weaponst.x, weaponst.y, weaponen.x, weaponen.y);
 
 		XDrawArc(display, window, gc, position.x-radius, position.y-radius, 2*radius, 2*radius, 0, 360*64);
 	}
@@ -95,8 +97,86 @@ public:
 	{
 		return (vector + -position).length();
 	}
-	virtual float distance(IAgent&agent)
+	virtual float distance(ISoldier&soldier)
 	{
-		return (agent.position + -position).length();
+		return (soldier.position + -position).length();
+	}
+	float isaround(Vector point)
+	{
+		return (point +- position).length() < radius;
+	}
+	void gethit()	//Returns 1/(defence+1) probability 
+	{
+		//cout << (rand()%(defence+1)==0) << endl;
 	}
 };
+
+class Pointobs
+{
+public:
+	Vector position;
+	Pointobs(Vector position) : position(position) {}
+	bool isinters(Soldier&soldier)
+	{
+		if (soldier.isaround(position))	return true;	return false;
+	}
+	Vector correction(Soldier&soldier)
+	{
+		return (soldier.position + -position) * (radius - soldier.distance(position));
+	}
+};
+class Lineobs
+{
+public:
+	Vector point1,point2;
+	Lineobs(Vector point1, Vector point2) : point1(point1), point2(point2) {}
+	bool isinters(Soldier&soldier)
+	{
+		Vector intersec;
+		Vector middle = (point1 + point2) / 2, difference = point2 + -point1;
+		short int v1 = difference.x;
+		short int v2 = difference.y;
+		short int v3 = middle.y - middle.x*v2/v1;
+		short int v4 = soldier.position.y + soldier.position.x*v1/v2;
+		intersec.x = (v4-v3)*v1*v2 / (float)(v1*v1 + v2*v2);
+		intersec.y = intersec.x*v2/v1 + v3;
+
+		if (soldier.isaround(point1) || soldier.isaround(point2))	return true;
+		if (soldier.isaround(intersec) && (intersec.x < point1.x && intersec.x > point2.x || intersec.x > point1.x && intersec.x < point2.x))	return true;	//if the intersection is inside the line segment and the soldier is around the intersection
+		return false;
+	}
+	Vector correction(Soldier&soldier)
+	{
+		Vector intersec;
+		Vector middle = (point1 + point2) / 2, difference = point2 + -point1;
+		short int v1 = difference.x;
+		short int v2 = difference.y;
+		short int v3 = middle.y - middle.x*v2/v1;
+		short int v4 = soldier.position.y + soldier.position.x*v1/v2;
+		intersec.x = (v4-v3)*v1*v2 / (float)(v1*v1 + v2*v2);
+		intersec.y = intersec.x*v2/v1 + v3;
+
+		if (!(intersec.x < point1.x && intersec.x > point2.x || intersec.x > point1.x && intersec.x < point2.x))
+			if (soldier.isaround(point1))	return (soldier.position + -point1) * (radius - soldier.distance(point1));
+			else						return (soldier.position + -point2) * (radius - soldier.distance(point2));
+
+		return (soldier.position + -intersec) * (radius - soldier.distance(intersec));		
+	}
+};
+
+/*
+p1,p2,a
+
+x1 y1 x2 y2 x0 y0
+y = a1*x + b1	a1 b1
+y = a2*x + b2	a2 b2
+x. y.
+distance(x.,y., x0,y0)
+
+a1 = (y2-y1) / (x2-x1)
+b1 = y1 - x1*a1
+a2 = -1/a1
+b2 = y0 - x0/a2
+x. = (b1-b2) / -(a1-a2)
+y. = x.*a1 + b1
+*/

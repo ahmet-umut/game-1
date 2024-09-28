@@ -1,16 +1,19 @@
 #include "classes.hh"
+#include <deque>
 
-#define noagents 2
-Agent agents[noagents];
+#define nosoldiers 1<<4
+#define noobstacles 1<<1
+
+Soldier soldiers[nosoldiers];
 
 void select(float x, float y)
 {
-	Agent::selagent = nullptr;
-	for (Agent& agent : agents)
+	Soldier::selsoldier = nullptr;
+	for (Soldier& soldier : soldiers)
 	{
-		if (x > agent.position.x-radius && x < agent.position.x+radius && y > agent.position.y-radius && y < agent.position.y+radius)
+		if (x > soldier.position.x-radius && x < soldier.position.x+radius && y > soldier.position.y-radius && y < soldier.position.y+radius)
 		{
-			Agent::selagent = &agent;
+			Soldier::selsoldier = &soldier;
 			break;
 		}
 	}
@@ -43,7 +46,7 @@ int main() {
 	gc = XCreateGC(display, window, 0, nullptr);
 
 	// Set drawing color (black)
-	XSetForeground(display, gc, BlackPixel(display, screen));
+	//XSetForeground(display, gc, BlackPixel(display, screen));	//commented out, because I choose the color when I draw.
 
 	// Event loop
 	XEvent event;
@@ -52,9 +55,10 @@ int main() {
 	// Initialize the random number generator
 	//srand(time(nullptr));
 
-	for (Agent& agent : agents)	agent = Agent(0);
-	agents[0].position = {400,300};
-	agents[1].position = {400,305};
+	for (Soldier& soldier : soldiers)	soldier = Soldier(0), soldier.army = rand()%2;
+
+	soldiers[0].position = {400,300};
+	soldiers[1].position = {400,305};
 
 	while (0)
 	{
@@ -62,7 +66,25 @@ int main() {
 		if (event.type==KeyPress)	break;
 	}
 
-	enum {debugmode, gamemode} mode = gamemode;
+	deque<Lineobs>lineobss;	deque<Pointobs> pointobss;
+	for (unsigned char obsti = 0; obsti < noobstacles; obsti++)
+	{
+		switch (rand()%2)
+		{
+		#define pushback push_back
+		case 0:
+			pointobss.pushback(Pointobs({rand()%800, rand()%600}));
+			break;
+		case 1:
+			lineobss.pushback(Lineobs({rand()%800, rand()%600},{rand()%800, rand()%600}));
+			break;
+		
+		default:
+			break;
+		}
+	}
+
+	enum {debugmode, gamemode, armymode} mode = gamemode;
 	short int x,y;
 	while (running) {
 		if (mode==debugmode || XPending(display))	//for every frame, handle up to one event || if in debug mode, handle exactly 1 event.
@@ -84,11 +106,14 @@ int main() {
 						goto debustep;
 						break;
 					case 40:  // 'd' key
-						cout << "drawing agents\n";
-						for (Agent& agent : agents)
+						cout << "drawing soldiers\n";
+						for (Soldier& soldier : soldiers)
 						{
-							agent.draw();
+							soldier.draw();
 						}
+						break;
+					case 38:	//a
+						mode = (mode==armymode) ? (cout<<"arrmymode off", gamemode) : (cout<<"arrmymode on", armymode);	cout<<endl;
 						break;
 					case 65:  // Space key
 						mode = (mode == debugmode) ? gamemode : debugmode;
@@ -106,27 +131,46 @@ int main() {
 						select(event.xbutton.x, event.xbutton.y);
 						break;
 					case 2:  // Middle mouse button
-						if (Agent::selagent)	Agent::selagent->attack();
+						if (Soldier::selsoldier)	Soldier::selsoldier->attack();
 						break;
 					case 3:  // Right mouse button
-						if (Agent::selagent)
+						switch (mode)
 						{
-							for (Agent& agent : agents)
-								if (event.xbutton.x > agent.position.x-radius && event.xbutton.x < agent.position.x+radius && event.xbutton.y > agent.position.y-radius && event.xbutton.y < agent.position.y+radius)
+						case gamemode:
+							if (Soldier::selsoldier)
+							{
+								//if the clicked area is inside in any soldier
+								for (Soldier& soldier : soldiers)
+									if (event.xbutton.x > soldier.position.x-radius && event.xbutton.x < soldier.position.x+radius && event.xbutton.y > soldier.position.y-radius && event.xbutton.y < soldier.position.y+radius)
+									{
+										Task *task = new Task(Soldier::selsoldier, &soldier);
+										Soldier::selsoldier->assign(task);
+										delete task;
+										cout << "assigned attack task\n";
+										goto endcase;
+									}
+								Task *task = new Task(Soldier::selsoldier, event.xbutton.x, event.xbutton.y);
+								Soldier::selsoldier->assign(task);
+								delete task;
+								cout << "assigned go task\n";
+							}
+							endcase:
+							break;
+						case armymode:
+							for (auto &&soldier : soldiers)
+							{
+								if (soldier.army)
 								{
-									Task *task = new Task(Agent::selagent, &agent);
-									Agent::selagent->assign(task);
+									Task *task = new Task(&soldier, event.xbutton.x, event.xbutton.y);
+									soldier.assign(task);
 									delete task;
-									cout << "assigned attack task\n";
-									break;
 								}
-								else
-								{
-									Task *task = new Task(Agent::selagent, event.xbutton.x, event.xbutton.y);
-									Agent::selagent->assign(task);
-									delete task;
-									cout << "assigned go task\n";
-								}
+							}
+							
+							break;
+						
+						default:
+							break;
 						}
 						break;
 					
@@ -151,28 +195,52 @@ int main() {
 		debustep:
 
 		XClearWindow(display, window);
-		for (Agent& agent : agents)
+		for (Soldier& soldier0 : soldiers)
 		{
-			agent.draw();
+			soldier0.draw();
+			for (Soldier& soldier1 : soldiers)	if (&soldier0 != &soldier1)	//if the weapon tip of soldier1 is inside soldier0 soldier0 gets hit
+			{
+				if (soldier0.isaround(soldier1.position + Vector::fromPolar(10, soldier1.direction+M_PIf/2) + Vector::fromPolar(soldier1.weaponpo + weaponle, soldier1.direction)))	soldier0.gethit();
+			}
 		}
 
 		#define msperframe 1000/60
 		usleep(msperframe*1000);
 
-		//agents[0].assign(agents[1].position.x, agents[1].position.y);
-
-		for (Agent& agent0 : agents)
+		XSetForeground(display, gc, secolor);
+		for (auto &&obst : pointobss)
 		{
-			agent0.execute();
-		}
-		for (Agent& agent0 : agents)
-		{
-			float distance;
-			for (Agent& agent1 : agents)	if (&agent0!=&agent1)	if ((distance = agent0.distance(agent1)) < 2*radius)
+			#define indicato 9
+			for (unsigned char cursor = 0; cursor < indicato; cursor++)
 			{
-				Vector posdif01 = agent1.position +- agent0.position;
-				agent0.position = agent0.position +- posdif01 / distance * (radius - distance/2);
-				agent1.position = agent1.position +  posdif01 / distance * (radius - distance/2);
+				XDrawPoint(display, window, gc, obst.position.x+cursor, obst.position.y);
+				XDrawPoint(display, window, gc, obst.position.x-cursor, obst.position.y);
+				XDrawPoint(display, window, gc, obst.position.x, obst.position.y+cursor);
+				XDrawPoint(display, window, gc, obst.position.x, obst.position.y-cursor);
+			}
+		}
+		for (auto &&obst : lineobss)
+		{
+			XDrawLine(display, window, gc, obst.point1.x, obst.point1.y, obst.point2.x, obst.point2.y);
+		}
+		
+		for (Soldier& soldier : soldiers)
+		{
+			for (auto &&obst : pointobss)	if (obst.isinters(soldier))	soldier.position = soldier.position + obst.correction(soldier);	//cout<<"point inters\n";	//obstacle avoid
+			for (auto &&obst : lineobss)	if (obst.isinters(soldier))	soldier.position = soldier.position + obst.correction(soldier);	//cout<<"line inters\n";	//obstacle avoid
+		}
+
+		for (Soldier& soldier0 : soldiers)
+		{
+			soldier0.execute();
+
+			//collision handling between soldiers
+			float distance;
+			for (Soldier& soldier1 : soldiers)	if (&soldier0!=&soldier1)	if ((distance = soldier0.distance(soldier1)) < 2*radius)
+			{
+				Vector posdif01 = soldier1.position +- soldier0.position;
+				soldier0.position = soldier0.position +- posdif01 / distance * (radius - distance/2);
+				soldier1.position = soldier1.position +  posdif01 / distance * (radius - distance/2);
 			}
 		}
 	}
