@@ -1,8 +1,8 @@
 #include "classes.hh"
-#include <deque>
 
-#define nosoldiers 1<<4
+#define nosoldiers 1<<0
 #define noobstacles 1<<1
+#define nopolybolos 1<<2
 
 Soldier soldiers[nosoldiers];
 
@@ -55,8 +55,9 @@ int main() {
 	// Initialize the random number generator
 	//srand(time(nullptr));
 
-	for (Soldier& soldier : soldiers)	soldier = Soldier(0), soldier.army = rand()%2;
+	for (Soldier& soldier : soldiers)	soldier.properts.team = rand()%2;	//random team assignment
 
+	//was for a testing purpose
 	soldiers[0].position = {400,300};
 	soldiers[1].position = {400,305};
 
@@ -82,6 +83,12 @@ int main() {
 		default:
 			break;
 		}
+	}
+
+	deque<Polybolo>polybolos;
+	for (unsigned char polybolo = 0; polybolo < nopolybolos; polybolo++)
+	{
+		polybolos.push_back(Polybolo());
 	}
 
 	enum {debugmode, gamemode, armymode} mode = gamemode;
@@ -118,6 +125,12 @@ int main() {
 					case 65:  // Space key
 						mode = (mode == debugmode) ? gamemode : debugmode;
 						cout << "Switched to " << (mode == debugmode ? "debug mode" : "game mode") << "\n";
+						break;
+
+					case 39:  // 's' key
+						for (Polybolo& polybolo : polybolos) {
+							polybolo.attack();
+						}
 						break;
 					
 					default:
@@ -159,7 +172,7 @@ int main() {
 						case armymode:
 							for (auto &&soldier : soldiers)
 							{
-								if (soldier.army)
+								if (soldier.properts.team)
 								{
 									Task *task = new Task(&soldier, event.xbutton.x, event.xbutton.y);
 									soldier.assign(task);
@@ -195,12 +208,17 @@ int main() {
 		debustep:
 
 		XClearWindow(display, window);
+
+		for (Polybolo& polybolo : polybolos)	polybolo.draw();
+		
 		for (Soldier& soldier0 : soldiers)
 		{
 			soldier0.draw();
-			for (Soldier& soldier1 : soldiers)	if (&soldier0 != &soldier1)	//if the weapon tip of soldier1 is inside soldier0 soldier0 gets hit
+
+			for (Trajecti& traject : trajects)
 			{
-				if (soldier0.isaround(soldier1.position + Vector::fromPolar(10, soldier1.direction+M_PIf/2) + Vector::fromPolar(soldier1.weaponpo + weaponle, soldier1.direction)))	soldier0.gethit();
+				Vector trajetip = traject.position + Vector::fromPolar(trajectile_length, traject.direction);
+				if (soldier0.isaround(trajetip))	soldier0.gethit();
 			}
 		}
 
@@ -229,6 +247,10 @@ int main() {
 			for (auto &&obst : pointobss)	if (obst.isinters(soldier))	soldier.position = soldier.position + obst.correction(soldier);	//cout<<"point inters\n";	//obstacle avoid
 			for (auto &&obst : lineobss)	if (obst.isinters(soldier))	soldier.position = soldier.position + obst.correction(soldier);	//cout<<"line inters\n";	//obstacle avoid
 		}
+
+		for (Trajecti& traject : trajects)	traject.draw();
+		for (Trajecti& traject : trajects)	if (!traject.execute())	for (auto it = trajects.begin(); it != trajects.end(); ++it)	if (&*it == &traject)	trajects.erase(it);
+		cout << trajects.size() << endl;
 
 		for (Soldier& soldier0 : soldiers)
 		{

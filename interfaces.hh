@@ -1,31 +1,39 @@
 #include "comm.hh"
 
-class ISoldier    // Interface for agents, needed to be used in Task
+class IEntity
 {
 public:
-	virtual float distance(Vector&vector) = 0;
-	virtual float distance(ISoldier&agent) = 0;
-	virtual void attack() = 0;
-
-	Vector position, velocity;
+	Vector position, velocity = {0,0};
 	float direction;
 
-	ISoldier() {}
-	ISoldier(float velocity) : velocity({velocity,velocity}) {}
+	IEntity()
+	{
+		position = {rand()%800, rand()%600};
+		//direction = rand()%1000/1000.0*2*M_PIf;	//random direction
+	}
+
+	float distance(Vector&vector)
+	{
+		return (vector + -position).length();
+	}
+	float distance(IEntity&entity)
+	{
+		return (entity.position + -position).length();
+	}
+
+	virtual void attack() = 0;
 };
 
-class ITask{};
+class ITraject{};
 
-
-/*
-SELF NOTES
+/*	SELF NOTES
 
 Agent.assign(Task)
 Agent.assign(x) for x in task type
 
 getter
 direct access
-?
+	?
 
 setter
 direct access*
@@ -41,13 +49,14 @@ defence	attack	probabilities
 5	campaign map
 6	UI
 	1	info text
+	2	select team
 7	better AI
 8	path finding
 9	map obstacles and stuff like that
 10	shields
 11	better collision checking
 12	main character logic
-13	
+13	tasks
 14	horses
 15	deformable and movable obstacles
 16	castles and cities
@@ -56,4 +65,6 @@ defence	attack	probabilities
 19	battle concept
 20	leader concept
 21	auto-attack
+22	readme
+23	meta
 */

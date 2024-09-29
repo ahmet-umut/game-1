@@ -44,7 +44,9 @@ using namespace std;
 Display *display;	Window window;	GC gc;
 
 #define bacolor 0x00FFFFFF
-#define agcolor 0x00000000
+#define encolor 0x00000000
 #define secolor 0x00FF0000
 
 #define radius 5
+
+#include <deque>

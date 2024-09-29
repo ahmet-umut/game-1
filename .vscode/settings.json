@@ -2,6 +2,8 @@
     "ros.distro": "jazzy",
     "files.associations": {
         "memory": "cpp",
-        "iostream": "cpp"
+        "iostream": "cpp",
+        "cmath": "cpp",
+        "ostream": "cpp"
     }
 }
