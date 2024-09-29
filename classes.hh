@@ -1,21 +1,39 @@
 #include "interfaces.hh"
 
+class Spear : public Shortlive
+{
+public:
+	using Shortlive::Shortlive;
+	void execute()	{}
+};
+
 class Task
 {
 public:
-	Vector goal;
-	IEntity *soldier, *target;
+	Vector goal, starting;	deque<Vector>path;
+	Longlive *soldier, *target;
 	enum {go, attack} type;
 	bool active=true;
 
+	#define maxerror (radius<<2)
+
 	Task() : active(false) {}
-	Task(IEntity*soldier, float x, float y) : soldier(soldier), goal({x,y}), type(go) {}
-	Task(IEntity*soldier, IEntity*target) : soldier(soldier), target(target), type(attack) {}
+	Task(Longlive*soldier, float x, float y) : soldier(soldier), goal({x,y}), type(go)
+	{
+		Vector current = starting = soldier->position;
+		while ((current + -goal).length() > maxerror)
+		{
+			Vector delta = (goal + -current) * maxerror / (goal+-current).length();
+			if
+			path.emplace(path.end(), delta);
+			end = end + delta;
+		}
+	}
+	Task(Longlive*soldier, Longlive*target) : soldier(soldier), target(target), type(attack) {}
 
 	void execute()
 	{
 		if (!active)	return;
-		#define maxerror (radius<<2)
 		switch (type)
 		{
 		case go:	//move towards the goal
@@ -47,29 +65,20 @@ public:
 	}
 };
 
-class Trajecti
+class Trajecti: public Shortlive
 {
 public:
-	Vector position;	float direction;	char velocity;
+	char velocity=0;
 
-	Trajecti(float x, float y, float direction, char velocity) : position({x,y}), direction(direction), velocity(velocity) {}
-	
-	Trajecti() : Trajecti(rand()%800, rand()%600, rand()%1000/1000.0*2*M_PIf, 10) {}
-	
-	void draw()
+	Trajecti(float x, float y, float direction, char velocity) : Shortlive(x, y, direction), velocity(velocity) {}
+
+	void execute()
 	{
-		XSetForeground(display, gc, encolor);
-
-		// Draw the trajectile of the Polybolos
-		Vector trajectile_start = position;
-		#define trajectile_length (radius<<2)
-		Vector trajectile_end = position + Vector::fromPolar(trajectile_length, direction);
-
-		XDrawLine(display, window, gc, trajectile_start.x, trajectile_start.y, trajectile_end.x, trajectile_end.y);
-	}
-	bool execute()
-	{
-		if (velocity == 0)	return false;
+		if (velocity == 0)
+		{
+			tobedeleted = true;
+			return;
+		}
 		if (abs(velocity) < 16)	velocity -= abs(velocity)/velocity;
 		else 
 		{
@@ -79,15 +88,18 @@ public:
 			if (positive != velocity>0)	velocity = 0;
 		}
 		position = position + Vector::fromPolar(velocity, direction);
-		return true;
 	}
 };
-deque<Trajecti>trajects;
 
-#define xpoint XPoint
-class Polybolo : public IEntity
+class Polybolo : public Longlive
 {
 public:
+	/* ~Polybolo()	//need to delete them manually since they are not dynamically allocated
+	{
+		for (auto iterator = shortlis.begin(); iterator != shortlis.end(); ++iterator)
+			for (auto&&trajecti: trajects)
+				if (&trajecti==*iterator)	iterator = shortlis.erase(iterator);
+	} */
 	void draw()
 	{
 		XSetForeground(display, gc, encolor);
@@ -113,32 +125,34 @@ public:
 	}
 	void attack()
 	{
-		Trajecti newTrajectile;
-		newTrajectile.position = this->position;
-		newTrajectile.direction = this->direction;
-		//newTrajectile.velocity = 5; // Set an appropriate velocity for the projectile
-		trajects.push_back(newTrajectile);
+		shortlis.push_back(new Trajecti(position.x, position.y, direction, 16));
 	}
 };
 
-class Soldier : public IEntity
+class Soldier : public Longlive
 {
 public:
 	inline static Soldier*selsoldier = nullptr;
-	Trajecti*weapon;
-	float weaponpo=0;
 	Task task;
 	unsigned char defence=0;	//used in Soldier::gethit() function.
 
+	Spear*spear;
+	float weaponpo=0;
+
 	struct {bool team, autoatta;} properts;
 
-	Soldier() : IEntity()
+	~Soldier()
+	{
+		spear->tobedeleted = true;
+	}
+
+	Soldier() : Longlive()
 	{
 		//Vector trajectile_start = position + Vector::fromPolar(10, direction+M_PI/2);
-		cout << trajects.size() << endl;
-		trajects.push_back(Trajecti(position.x, position.y, direction, 1));
-		weapon = &trajects.back();
-		cout << trajects.size() << endl;
+		cout << shortlis.size() << endl;
+		spear = new Spear(position.x, position.y, direction);
+		shortlis.push_back(spear);
+		cout << shortlis.size() << endl;
 	}
 
 	void draw()
@@ -147,12 +161,14 @@ public:
 		else	XSetForeground(display, gc, encolor);
 
 		XDrawPoint(display, window, gc, position.x, position.y);
-
-		/* // Draw the weapon held by the right hand
-		Vector weaponst = position + Vector::fromPolar(10, direction+M_PI/2) + Vector::fromPolar(weaponpo, direction);
-		#define weaponle 15
-		Vector weaponen = weaponst + Vector::fromPolar(weaponle, direction);
-		XDrawLine(display, window, gc, weaponst.x, weaponst.y, weaponen.x, weaponen.y); */
+		
+		Vector start = task.starting;
+		for (auto&&delta: task.path)
+		{
+			Vector end = start + delta;
+			XDrawLine(display, window, gc, start.x, start.y, end.x, end.y);
+			start = end;
+		}
 
 		XDrawArc(display, window, gc, position.x-radius, position.y-radius, 2*radius, 2*radius, 0, 360*64);
 	}
@@ -168,18 +184,10 @@ public:
 	}
 	void execute()
 	{
-		weapon->position = position + Vector::fromPolar(10, direction+M_PI/2) + Vector::fromPolar(weaponpo, direction);
-		weapon->direction = direction;
+		spear->position = position + Vector::fromPolar(10, direction+M_PI/2) + Vector::fromPolar(weaponpo, direction);
+		spear->direction = direction;		
 		position = position+velocity;
 		task.execute();
-	}
-	virtual float distance(Vector&vector)
-	{
-		return (vector + -position).length();
-	}
-	virtual float distance(IEntity&soldier)
-	{
-		return (soldier.position + -position).length();
 	}
 	float isaround(Vector point)
 	{
@@ -187,19 +195,9 @@ public:
 	}
 	void gethit()	//Returns 1/(defence+1) probability 
 	{
-		//cout << (rand()%(defence+1)==0) << endl;
-	}
-
-	~Soldier()
-	{
-		for (auto it = trajects.begin(); it != trajects.end(); ++it)
-		{
-			if (&*it == weapon)
-			{
-				trajects.erase(it);
-				break;
-			}
-		}
+		cout << "shoot ";
+		if (rand()%(defence+1)==0)	cout << "dead";
+		cout << endl;
 	}
 };
 
@@ -270,10 +268,4 @@ public:
 
 		return (soldier.position + -intersec) * (radius - soldier.distance(intersec));		
 	}
-};
-
-class Siege: public IEntity	//Siege weapons
-{
-public:
-	
 };

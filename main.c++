@@ -1,3 +1,6 @@
+#pragma warning(push)
+#pragma warning( disable : 4244 )	//narrowing conversion
+
 #include "classes.hh"
 
 #define nosoldiers 1<<0
@@ -215,9 +218,9 @@ int main() {
 		{
 			soldier0.draw();
 
-			for (Trajecti& traject : trajects)
+			for (Shortlive*& shortli : shortlis)
 			{
-				Vector trajetip = traject.position + Vector::fromPolar(trajectile_length, traject.direction);
+				Vector trajetip = shortli->position + Vector::fromPolar(shlilength, shortli->direction);
 				if (soldier0.isaround(trajetip))	soldier0.gethit();
 			}
 		}
@@ -248,9 +251,15 @@ int main() {
 			for (auto &&obst : lineobss)	if (obst.isinters(soldier))	soldier.position = soldier.position + obst.correction(soldier);	//cout<<"line inters\n";	//obstacle avoid
 		}
 
-		for (Trajecti& traject : trajects)	traject.draw();
-		for (Trajecti& traject : trajects)	if (!traject.execute())	for (auto it = trajects.begin(); it != trajects.end(); ++it)	if (&*it == &traject)	trajects.erase(it);
-		cout << trajects.size() << endl;
+		for (auto &&shortli: shortlis)	shortli->draw();
+		for (auto &&shortli: shortlis)	shortli->execute();
+		for (auto it = shortlis.begin(); it != shortlis.end(); ++it)
+			if ((*it)->tobedeleted)
+			{
+				delete *it;
+				it = shortlis.erase(it);
+				if (it == shortlis.end())	break;
+			}
 
 		for (Soldier& soldier0 : soldiers)
 		{
@@ -278,3 +287,4 @@ int main() {
 g++ main.c++ -o main -lX11
 ./main
 */
+#pragma warning(pop)	//narrowing conversion

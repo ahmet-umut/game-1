@@ -6,6 +6,8 @@ Using Xlib. I want to focus on the game mechanics rather than performance in thi
 ## files
 ### comm.hh
 Some macros and includes. And the Vector class. 
+### interfaces.hh
+Includes the interface for any entity.
 
 ## classes
 ### Vector

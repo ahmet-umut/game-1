@@ -1,12 +1,12 @@
 #include "comm.hh"
 
-class IEntity
+class Longlive	//abstract class for soldiers and polybolos
 {
 public:
 	Vector position, velocity = {0,0};
 	float direction;
 
-	IEntity()
+	Longlive()
 	{
 		position = {rand()%800, rand()%600};
 		//direction = rand()%1000/1000.0*2*M_PIf;	//random direction
@@ -16,7 +16,7 @@ public:
 	{
 		return (vector + -position).length();
 	}
-	float distance(IEntity&entity)
+	float distance(Longlive&entity)
 	{
 		return (entity.position + -position).length();
 	}
@@ -24,7 +24,27 @@ public:
 	virtual void attack() = 0;
 };
 
-class ITraject{};
+class Shortlive	//abstract class for trajectiles and spears
+{
+public:
+	Vector position;	float direction;
+	bool tobedeleted = false;
+
+	Shortlive(float x, float y, float direction) : position({x,y}), direction(direction) {}
+	Shortlive() : Shortlive(rand()%800, rand()%600, rand()%1000/1000.0*2*M_PIf) {}
+	
+	#define shlilength (radius<<2)
+	virtual void draw()
+	{
+		XSetForeground(display, gc, encolor);
+		Vector start = position;
+		Vector end = position + Vector::fromPolar(shlilength, direction);
+		XDrawLine(display, window, gc, start.x, start.y, end.x, end.y);
+	}
+	virtual void execute() = 0;
+};
+
+deque<Shortlive*>shortlis;
 
 /*	SELF NOTES
 
@@ -42,8 +62,8 @@ hitpoints	decremented
 defence	attack	probabilities
 
 	THINGS TO ADD
-1	formation control
-2	army concept
+1	armies and formations
+2
 3	other soldier/agent types
 4	high level game logic such as money for recruiting, etc.
 5	campaign map
@@ -67,4 +87,6 @@ defence	attack	probabilities
 21	auto-attack
 22	readme
 23	meta
+24	long-live delete
+25	terrain (water, trees, etc.)
 */
