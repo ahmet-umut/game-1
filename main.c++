@@ -64,12 +64,6 @@ int main() {
 	soldiers[0].position = {400,300};
 	soldiers[1].position = {400,305};
 
-	while (0)
-	{
-		XNextEvent(display, &event);
-		if (event.type==KeyPress)	break;
-	}
-
 	deque<Lineobs>lineobss;	deque<Pointobs> pointobss;
 	for (unsigned char obsti = 0; obsti < noobstacles; obsti++)
 	{
@@ -208,6 +202,7 @@ int main() {
 			}
 		}
 		if (mode==debugmode)	continue;
+	
 		debustep:
 
 		XClearWindow(display, window);

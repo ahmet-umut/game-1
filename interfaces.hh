@@ -43,8 +43,19 @@ public:
 	}
 	virtual void execute() = 0;
 };
-
 deque<Shortlive*>shortlis;
+
+class Obstacle
+{
+public:
+	enum obsttype {point,line} type;	//0 for point, 1 for line
+
+	//Obstacle(obsttype type) : type(type) {}
+
+	virtual bool isinters(Longlive&entity) = 0;
+	virtual Vector correction(Longlive&entity) = 0;
+};
+deque<Obstacle*>obstacles;
 
 /*	SELF NOTES
 

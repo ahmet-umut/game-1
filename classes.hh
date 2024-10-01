@@ -7,64 +7,6 @@ public:
 	void execute()	{}
 };
 
-class Task
-{
-public:
-	Vector goal, starting;	deque<Vector>path;
-	Longlive *soldier, *target;
-	enum {go, attack} type;
-	bool active=true;
-
-	#define maxerror (radius<<2)
-
-	Task() : active(false) {}
-	Task(Longlive*soldier, float x, float y) : soldier(soldier), goal({x,y}), type(go)
-	{
-		Vector current = starting = soldier->position;
-		while ((current + -goal).length() > maxerror)
-		{
-			Vector delta = (goal + -current) * maxerror / (goal+-current).length();
-			if
-			path.emplace(path.end(), delta);
-			end = end + delta;
-		}
-	}
-	Task(Longlive*soldier, Longlive*target) : soldier(soldier), target(target), type(attack) {}
-
-	void execute()
-	{
-		if (!active)	return;
-		switch (type)
-		{
-		case go:	//move towards the goal
-			if (soldier->distance(goal) > maxerror)
-			{
-				soldier->velocity = (goal +- soldier->position)/100;
-				soldier->direction = atan2(goal.y-soldier->position.y, goal.x-soldier->position.x);
-			}
-			//else	active = false;
-			break;
-		case attack:	//attack the target
-			if (soldier->distance(*target) > maxerror)
-			{
-				soldier->direction = atan2(target->position.y-soldier->position.y, target->position.x-soldier->position.x);
-				soldier->velocity = ((*target).position +- soldier->position)/100;
-			}
-			else
-			{
-				soldier->direction = atan2(target->position.y-soldier->position.y, target->position.x-soldier->position.x)-.4;
-				soldier->velocity = {0,0};
-				soldier->attack();
-			}
-			break;
-		
-		default:
-			break;
-		}
-		
-	}
-};
-
 class Trajecti: public Shortlive
 {
 public:
@@ -201,71 +143,66 @@ public:
 	}
 };
 
-class Pointobs
+class Pointobs: public Obstacle
 {
 public:
 	Vector position;
-	Pointobs(Vector position) : position(position) {}
-	bool isinters(Soldier&soldier)
+	Pointobs(Vector position) : position(position)
 	{
-		if (soldier.isaround(position))	return true;	return false;
+		type=point;
 	}
-	Vector correction(Soldier&soldier)
+
+	bool isinters(Soldier& soldier)
+	{
+		if (soldier.isaround(position)) return true; return false;
+	}
+	Vector correction(Soldier& soldier)
 	{
 		return (soldier.position + -position) * (radius - soldier.distance(position));
 	}
 };
-class Lineobs
+
+class Lineobs: public Obstacle
 {
 public:
-	Vector point1,point2;
-	Lineobs(Vector point1, Vector point2) : point1(point1), point2(point2) {}
-	/*
-	p1,p2,a
+    LineSegment lineSegment;
 
-	x1 y1 x2 y2 x0 y0
-	y = a1*x + b1	a1 b1
-	y = a2*x + b2	a2 b2
-	x. y.
-	distance(x.,y., x0,y0)
-
-	a1 = (y2-y1) / (x2-x1)
-	b1 = y1 - x1*a1
-	a2 = -1/a1
-	b2 = y0 - x0/a2
-	x. = (b1-b2) / -(a1-a2)
-	y. = x.*a1 + b1
-	*/
-	bool isinters(Soldier&soldier)
+    Lineobs(Vector point1, Vector point2) : lineSegment(point1, point2 +- point1)
 	{
-		Vector intersec;
-		Vector middle = (point1 + point2) / 2, difference = point2 + -point1;
-		short int v1 = difference.x;
-		short int v2 = difference.y;
-		short int v3 = middle.y - middle.x*v2/v1;
-		short int v4 = soldier.position.y + soldier.position.x*v1/v2;
-		intersec.x = (v4-v3)*v1*v2 / (float)(v1*v1 + v2*v2);
-		intersec.y = intersec.x*v2/v1 + v3;
-
-		if (soldier.isaround(point1) || soldier.isaround(point2))	return true;
-		if (soldier.isaround(intersec) && (intersec.x < point1.x && intersec.x > point2.x || intersec.x > point1.x && intersec.x < point2.x))	return true;	//if the intersection is inside the line segment and the soldier is around the intersection
-		return false;
+		type=line;
 	}
-	Vector correction(Soldier&soldier)
-	{
-		Vector intersec;
-		Vector middle = (point1 + point2) / 2, difference = point2 + -point1;
-		short int v1 = difference.x;
-		short int v2 = difference.y;
-		short int v3 = middle.y - middle.x*v2/v1;
-		short int v4 = soldier.position.y + soldier.position.x*v1/v2;
-		intersec.x = (v4-v3)*v1*v2 / (float)(v1*v1 + v2*v2);
-		intersec.y = intersec.x*v2/v1 + v3;
 
-		if (!(intersec.x < point1.x && intersec.x > point2.x || intersec.x > point1.x && intersec.x < point2.x))
-			if (soldier.isaround(point1))	return (soldier.position + -point1) * (radius - soldier.distance(point1));
-			else						return (soldier.position + -point2) * (radius - soldier.distance(point2));
+    bool isinters(Soldier& soldier)
+    {
+        Vector middle = lineSegment.start + lineSegment.delta / 2;
+        Vector intersec;
+        short int v1 = lineSegment.delta.x;
+        short int v2 = lineSegment.delta.y;
+        short int v3 = middle.y - middle.x * v2 / v1;
+        short int v4 = soldier.position.y + soldier.position.x * v1 / v2;
+        intersec.x = (v4 - v3) * v1 * v2 / (float)(v1 * v1 + v2 * v2);
+        intersec.y = intersec.x * v2 / v1 + v3;
 
-		return (soldier.position + -intersec) * (radius - soldier.distance(intersec));		
-	}
+        if (soldier.isaround(lineSegment.start) || soldier.isaround(lineSegment.end())) return true;
+        if (soldier.isaround(intersec) && ((intersec.x < lineSegment.start.x && intersec.x > lineSegment.end().x) || (intersec.x > lineSegment.start.x && intersec.x < lineSegment.end().x))) return true;
+        return false;
+    }
+
+    Vector correction(Soldier& soldier)
+    {
+        Vector intersec;
+        Vector middle = lineSegment.start + lineSegment.delta / 2;
+        short int v1 = lineSegment.delta.x;
+        short int v2 = lineSegment.delta.y;
+        short int v3 = middle.y - middle.x * v2 / v1;
+        short int v4 = soldier.position.y + soldier.position.x * v1 / v2;
+        intersec.x = (v4 - v3) * v1 * v2 / (float)(v1 * v1 + v2 * v2);
+        intersec.y = intersec.x * v2 / v1 + v3;
+
+        if (!(intersec.x < lineSegment.start.x && intersec.x > lineSegment.end().x) || (intersec.x > lineSegment.start.x && intersec.x < lineSegment.end().x))
+            if (soldier.isaround(lineSegment.start)) return (soldier.position + -lineSegment.start) * (radius - soldier.distance(lineSegment.start));
+            else return (soldier.position + -lineSegment.end()) * (radius - soldier.position.distance(lineSegment.end()));
+
+        return (soldier.position + -intersec) * (radius - soldier.distance(intersec));
+    }
 };

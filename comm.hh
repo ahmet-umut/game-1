@@ -1,3 +1,4 @@
+#pragma once
 #include <math.h>
 
 #include <X11/Xlib.h>
@@ -41,13 +42,17 @@ public:
         return {(short)x, (short)y};
     }
 };
-class Linesegment
+class LineSegment
 {
 public:
-    Vector point1, point2;
-    Linesegment(Vector point1, Vector point2) : point1(point1), point2(point2) {}
+    Vector start, delta;
+    LineSegment(Vector start, Vector delta) : start(start), delta(delta) {}
 
-    bool isinters(Linesegment&linesegment)
+    Vector end() {
+        return start + delta;
+    }
+
+    bool isIntersecting(LineSegment& lineSegment)
     {
         auto orientation = [](Vector p, Vector q, Vector r) {
             float val = (q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y);
@@ -57,13 +62,13 @@ public:
 
         auto onSegment = [](Vector p, Vector q, Vector r) {
             if (q.x <= max(p.x, r.x) && q.x >= min(p.x, r.x) &&
-            q.y <= max(p.y, r.y) && q.y >= min(p.y, r.y))
-            return true;
+                q.y <= max(p.y, r.y) && q.y >= min(p.y, r.y))
+                return true;
             return false;
         };
 
-        Vector p1 = point1, q1 = point2;
-        Vector p2 = linesegment.point1, q2 = linesegment.point2;
+        Vector p1 = start, q1 = end();
+        Vector p2 = lineSegment.start, q2 = lineSegment.end();
 
         int o1 = orientation(p1, q1, p2);
         int o2 = orientation(p1, q1, q2);
@@ -93,7 +98,5 @@ Display *display;	Window window;	GC gc;
 #define bacolor 0x00FFFFFF
 #define encolor 0x00000000
 #define secolor 0x00FF0000
-
-#define radius 5
 
 #include <deque>
