@@ -1,7 +1,7 @@
-In this game, I will continue on my previous -unfinished- game project (That was written in Python.).
+In this game; I will continue on my previous -unfinished- game project (That was written in Python.), switching to C++.
 
 # development details
-Using Xlib. I want to focus on the game mechanics rather than performance in this early stage, so decided to use Xlib -the library of the X Server. In the future I may switch the project to a hardware rendering solution.
+Using Xlib for visualization. I want to focus on the game mechanics rather than performance in this early stage, so decided to use Xlib -the library of the X Server. In the future I may switch the project to a hardware rendering solution.
 
 ## files
 ### comm.hh
