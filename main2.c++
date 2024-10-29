@@ -54,9 +54,14 @@ void setuppolybolos()
 }
 
 enum gamemode {debug, game, army} mode = game;
-void handleevent()
-{
 
+void handlenextevent()
+{
+	XEvent event;
+	if (mode==game || XPending(display))
+	{
+		XNextEvent(display, &event)
+	}
 }
 
 void gameloop()
