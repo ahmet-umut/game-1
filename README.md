@@ -25,7 +25,7 @@ I am using virtual functions to handle this circular dependency.
 Normally, a Base class for Task. However, it is empty because apparently I do not yet need a base class in the current scenario.
 
 ### Agent
-The main class of the game. They are entities that exist in a 2d space. Each has a position, velocity and also a relative weapon position (for now 1d).
+The main class of the game. They are entities that exist in a 2d space. Each has a position, velocity and also a **weapon position** defining how _swung_ the weapon is (For now it is a 1 dimensional variable.).
 They have a instance of a class named Tasks, I plan which to be the main way to control them.
 
 ### Task
