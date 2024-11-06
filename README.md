@@ -12,12 +12,6 @@ I am now in the way of designing a path finding algorithm for this continuous en
 # development details
 Using Xlib for visualization. I want to focus on the game mechanics rather than performance in this early stage, so decided to use Xlib -the library of the X Server. In the future I may switch the project to a hardware rendering solution.
 
-## files
-### comm.hh
-Some macros and includes. And the Vector class. 
-### interfaces.hh
-Includes the interface for any entity.
-
 ## classes
 ### Vector
 2d vector to remove redundancies. In my past games and simulations, I used to define x and y seperately for every suitable feature such as position and velocity. I decided to give a custom vector class a try to see its effects on implementation and -less important- performance.
