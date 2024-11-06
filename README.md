@@ -9,6 +9,11 @@ There are also static obstacles (planning to add dynamic ones in the near future
 
 I am now in the way of designing a path finding algorithm for this continuous environment.
 
+## collisions
+https://github.com/user-attachments/assets/eca99036-44b8-41e8-b5d8-1a9be753181d
+## following
+https://github.com/user-attachments/assets/a3c29148-60ca-43b0-bbda-f8f4885517fa
+
 # development details
 Using Xlib for visualization. I want to focus on the game mechanics rather than performance in this early stage, so decided to use Xlib -the library of the X Server. In the future I may switch the project to a hardware rendering solution.
 
