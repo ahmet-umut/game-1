@@ -1,5 +1,14 @@
 In this game; I will continue on my previous -unfinished- game project (That was written in Python.), switching to C++.
 
+# game details
+Meeting the computer and the internet since I was born (2001), I have been playing browser and computer games since -or maybe even before- I know how to read! Since those young ages, I have always imagined making my own game where I can add any functionality I wanted. This 2d game is one of the milestones of my dream.
+
+This is a 2d game, inspired from game series Total War, Age of Empires and Mount&Blade. I will be implementing some aspects of every series as time progresses. This game includes 2d agents (represented by circles). They can hold weapons in their hands (So far, there is only one weapon. Which is a spear. Whether the tip of the weapon is inside the agent is checked to decide if a soldier is hit with a spear.
+
+There are also static obstacles (planning to add dynamic ones in the near future). One of the types of static obstacles is a line obstacle. The agents cannot pass thru it, they need to traverse around them. The obstacle class is defined as 2 vectors, each pointing to the endpoints of the line segment.
+
+I am now in the way of designing a path finding algorithm for this continuous environment.
+
 # development details
 Using Xlib for visualization. I want to focus on the game mechanics rather than performance in this early stage, so decided to use Xlib -the library of the X Server. In the future I may switch the project to a hardware rendering solution.
 
@@ -31,8 +40,3 @@ They have a instance of a class named Tasks, I plan which to be the main way to 
 Go to a global location.
 #### attack
 Go towards the agent you are assigned to attack if you are not close enough (maxerror), if you are close enough, turn a little towards the enemy and swing the spear.
-
-# game details
-Meeting the computer and the internet since I was born (2001), I have been playing browser and computer games since -or maybe even before- I know how to read! Since those young ages, I have always imagined making my own game where I can add any functionality I wanted. This 2d game is one of the milestones of my dream.
-
-This is a 2d game, inspired from game series Total War, Age of Empires and Mount&Blade. I will be implementing some aspects of every series as time progresses.
