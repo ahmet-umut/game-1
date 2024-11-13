@@ -1,6 +1,13 @@
+module;
+#include <iostream>
 export module obstacle;
+using namespace std;
 export class Obstacle
 {
 	public:
-	virtual void draw() {}
+	void draw()
+	{
+		// Draw the obstacle
+		cout << "Drawing obstacle" << endl;
+	}
 };

@@ -3,6 +3,7 @@
 #include <X11/Xlib.h>
 #include <deque>
 using std::deque;
+#include <stdlib.h>  // For drand48() and rand()
 
 import obstacle;
 deque<Obstacle> obstacles;
@@ -33,7 +34,7 @@ void setup_soldiers(unsigned char count)
 {
 	using namespace std;
 	cout << "setting up " << (int)count << " soldiers" << endl;
-	for (int i = 0; i < count; i++)	soldiers.emplace_back();
+	for (int i = 0; i < count; i++)	soldiers.emplace_back(rand(),rand());
 }
 void setup_polybolos(unsigned char count)
 {
@@ -67,6 +68,7 @@ void gameloop()
 
 		for (auto& polybolo : polybolos)	polybolo.draw();
 		for (auto& soldier : soldiers)	soldier.draw();
+		for (auto& obstacle : obstacles)	obstacle.draw();
 
 		sleep(1);
 	}

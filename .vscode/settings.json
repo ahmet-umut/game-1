@@ -70,7 +70,14 @@
         "typeinfo": "cpp",
         "variant": "cpp",
         "text_encoding": "cpp",
-        "fstream": "cpp"
+        "fstream": "cpp",
+        "dense": "cpp",
+        "stdvector": "cpp",
+        "svd": "cpp",
+        "core": "cpp",
+        "cholesky": "cpp",
+        "eigenvalues": "cpp",
+        "geometry": "cpp"
     },
     "C_Cpp.default.compilerPath": "/usr/bin/g++"
 }

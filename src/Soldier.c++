@@ -1,13 +1,16 @@
 module;
 #include <iostream>
 export module soldier;
+import vector;
 #include "../include/Entity.hh"
 using namespace std;
-export class Soldier
+export class Soldier : public Entity
 {
 public:
+	Vector position;
 	char name[2];
-	Soldier()
+
+	Soldier(float x, float y) : position(x,y)
 	{
 		cout << "Soldier constructed" << endl;
 		name[0]='S';
