@@ -53,24 +53,83 @@ void setuppolybolos()
 	}
 }
 
-enum gamemode {debug, game, army} mode = game;
+enum gamestate {running, halt, runonce, end};
+gamestate state = running;
 
 void handlenextevent()
 {
 	XEvent event;
-	if (mode==game || XPending(display))
+	if (XPending(display))
 	{
-		XNextEvent(display, &event)
+		XNextEvent(display, &event);
+		switch (event.type)
+		{
+		case KeyPress:
+			switch (event.xkey.keycode)
+			{
+			case 9:  // Escape key
+				state=end;
+				break;
+			case 36:  // Enter key	for debug mode for step by step debugging
+				cout << "debug step\n";
+				state=runonce;
+				break;
+			case 40:  // 'd' key
+				cout << "drawing soldiers\n";
+				for (Soldier& soldier : soldiers)
+				{
+					soldier.draw();
+				}
+				break;
+			case 38:	//a
+				/* mode = (mode==army) ? (cout<<"arrmymode off", game) : (cout<<"arrmymode on", army);	cout<<endl; */
+				break;
+			case 65:  // Space keyd
+				switch (state)
+				{
+				case running:
+					state=halt;
+					cout << "halted the game";
+					break;
+				
+				default:
+					state=running;
+					cout << "continuing the game";
+					break;
+				}
+				break;
+			}
+			break;
+		case ButtonPress:
+			switch (event.xbutton.button)
+			{
+			case 1:  // Left mouse button
+				select(event.xbutton.x, event.xbutton.y);
+				break;
+			}
+			break;
+		}
 	}
 }
 
 void gameloop()
 {
-	bool running=true;
-	while (running)
+	while (1)
 	{
-		handleevent(mode);
-		XClearWindow(display, window);
+		handlenextevent();
+		switch (state)
+		{
+		case halt:
+			continue;
+		case runonce:
+			state=halt;
+			break;
+		case end:
+			return;
+		}
+		cout << "game tick";
+		sleep(1);
+		//XClearWindow(display, window);
 	}
 }
 

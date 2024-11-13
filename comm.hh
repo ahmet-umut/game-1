@@ -42,6 +42,7 @@ public:
         return {(short)x, (short)y};
     }
 };
+
 class LineSegment
 {
 public:
