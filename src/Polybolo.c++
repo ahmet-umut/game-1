@@ -1,5 +1,6 @@
 module;
 #include <iostream>
+#include <X11/Xlib.h>
 export module polybolo;
 #include "../include/Entity.hh"
 using namespace std;
@@ -13,7 +14,7 @@ public:
 		name[0]='O';
 		//direction = rand()%1000/1000.0*2*M_PIf;	//random direction
 	}
-	virtual void draw()
+	void draw(Display*display, Window window, GC gc)
 	{
 		cout << "Drawing Polybolo" << endl;
 		cout << "Name: " << name << endl;

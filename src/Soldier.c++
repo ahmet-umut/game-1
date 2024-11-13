@@ -1,5 +1,6 @@
 module;
 #include <iostream>
+#include <X11/Xlib.h>
 export module soldier;
 import vector;
 #include "../include/Entity.hh"
@@ -16,10 +17,9 @@ public:
 		name[0]='S';
 		//direction = rand()%1000/1000.0*2*M_PIf;	//random direction
 	}
-	void draw()
+	void draw(Display*display, Window window, GC gc)
 	{
-		cout << "Drawing Soldier" << endl;
-		cout << "Name: " << name << endl;
-		// Draw the soldier
+		XSetForeground(display, gc, 0);
+		XFillArc(display, window, gc, position.x-9, position.y-9, 2*9, 2*9, 0, 360*64);
 	}
 };

@@ -34,7 +34,7 @@ void setup_soldiers(unsigned char count)
 {
 	using namespace std;
 	cout << "setting up " << (int)count << " soldiers" << endl;
-	for (int i = 0; i < count; i++)	soldiers.emplace_back(rand(),rand());
+	for (int i = 0; i < count; i++)	soldiers.emplace_back(rand()%255, rand()%255);
 }
 void setup_polybolos(unsigned char count)
 {
@@ -50,6 +50,7 @@ import handle_next_event;
 void gameloop()
 {
 	gamestate state = running;
+	unsigned char clock = 0;
 	while (1)
 	{
 		handle_next_event(state, display);
@@ -63,12 +64,12 @@ void gameloop()
 		case end:
 			return;
 		}
-		std::cout << "game tick" << std::endl;
+		clock++, std::cout << "game tick: " << (int)clock << std::endl;
 		XClearWindow(display, window);
 
-		for (auto& polybolo : polybolos)	polybolo.draw();
-		for (auto& soldier : soldiers)	soldier.draw();
-		for (auto& obstacle : obstacles)	obstacle.draw();
+		for (auto& polybolo : polybolos)	polybolo.draw(display, window, gc);
+		for (auto& soldier : soldiers)	soldier.draw(display, window, gc);
+		for (auto& obstacle : obstacles)	obstacle.draw(display, window, gc);
 
 		sleep(1);
 	}
