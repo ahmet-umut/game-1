@@ -20,4 +20,9 @@ public:
 		cout << "Name: " << name << endl;
 		// Draw the polybolo
 	}
+	void execute()
+	{
+		cout << "Executing Polybolo" << endl;
+		// Execute the polybolo
+	}
 };

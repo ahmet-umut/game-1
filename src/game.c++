@@ -5,8 +5,10 @@
 using std::deque;
 #include <stdlib.h>  // For drand48() and rand()
 
-import obstacle;
-deque<Obstacle> obstacles;
+import point_obstacle;
+deque<PointObstacle> point_obstacles;
+import line_obstacle;
+deque<LineObstacle> line_obstacles;
 import soldier;
 deque<Soldier> soldiers;
 import polybolo;
@@ -18,14 +20,15 @@ void setup_obstacles(unsigned char count)
 	cout << "setting up " << (int)count << " obstacles" << endl;
 	for (int i = 0; i < count; i++)
 	{
-		obstacles.emplace_back();
 		switch (rand()%2)
 		{
 		case 0:
 			cout << "adding point obstacle" << endl;
+			point_obstacles.emplace_back();
 			break;
 		case 1:
 			cout << "adding line obstacle" << endl;
+			line_obstacles.emplace_back();
 			break;
 		}
 	}
@@ -67,9 +70,17 @@ void gameloop()
 		clock++, std::cout << "game tick: " << (int)clock << std::endl;
 		XClearWindow(display, window);
 
-		for (auto& polybolo : polybolos)	polybolo.draw(display, window, gc);
-		for (auto& soldier : soldiers)	soldier.draw(display, window, gc);
-		for (auto& obstacle : obstacles)	obstacle.draw(display, window, gc);
+		for (auto& polybolo : polybolos)
+		{
+			polybolo.draw(display, window, gc);
+			polybolo.execute();
+		}
+		for (auto& soldier : soldiers)
+		{
+			soldier.draw(display, window, gc);
+			soldier.execute();
+		}	
+		for (auto& obstacle : point_obstacles)	obstacle.draw(display, window, gc);
 
 		sleep(1);
 	}

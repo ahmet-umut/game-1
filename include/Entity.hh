@@ -4,5 +4,6 @@ class Entity
 public:
 	float x, y;
 	virtual void draw(Display*, Window , GC )=0;
+	virtual void execute()=0;
 	void attack();
 };

@@ -3,6 +3,7 @@ module;
 #include <X11/Xlib.h>
 export module soldier;
 import vector;
+#include "../include/Obstacle.hh"
 #include "../include/Entity.hh"
 using namespace std;
 export class Soldier : public Entity
@@ -21,5 +22,17 @@ public:
 	{
 		XSetForeground(display, gc, 0);
 		XFillArc(display, window, gc, position.x-9, position.y-9, 2*9, 2*9, 0, 360*64);
+	}
+	void execute()
+	{
+		cout << "Executing Soldier" << endl;
+	}
+	void handle_collision(Soldier& other)
+	{
+		cout << "Handling collision between soldiers" << endl;
+	}
+	void handle_collision(Obstacle& obstacle)
+	{
+		cout << "Handling collision between soldier and point obstacle" << endl;
 	}
 };
