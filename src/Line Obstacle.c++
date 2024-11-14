@@ -1,13 +1,14 @@
-module;
+#include "../include/Line Obstacle.hh"
 #include <iostream>
-#include <X11/Xlib.h>
-export module line_obstacle;
-#include "../include/Obstacle.hh"
-export class LineObstacle: public Obstacle
+using namespace std;
+void LineObstacle::draw(Display*display, Window window, GC gc)
 {
-public:
-	void draw(Display*display, Window window, GC gc)
-	{
-		std::cout << "Drawing line obstacle" << std::endl;
-	}
-};
+	cout << "LineObstacle::draw" << endl;
+	XSetForeground(display, gc, 0);
+	XDrawLine(display, window, gc, 100, 100, 200, 200);
+}
+LineObstacle::LineObstacle()
+{
+	type = line;
+	cout << "LineObstacle constructed" << endl;
+}

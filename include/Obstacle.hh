@@ -1,6 +1,5 @@
-#include <iostream>
+#pragma once
 #include <X11/Xlib.h>
-using namespace std;
 class Obstacle
 {
 public:

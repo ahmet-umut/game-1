@@ -1,13 +1,13 @@
-module;
+#include "../include/Point Obstacle.hh"
 #include <iostream>
 #include <X11/Xlib.h>
-export module point_obstacle;
-#include "../include/Obstacle.hh"
-export class PointObstacle: public Obstacle
+using namespace std;
+void PointObstacle::draw(Display*display, Window window, GC gc)
 {
-public:
-	void draw(Display*display, Window window, GC gc)
-	{
-		std::cout << "Drawing point obstacle" << std::endl;
-	}
-};
+	cout << "PointObstacle::draw" << endl;
+}
+PointObstacle::PointObstacle()
+{
+	type = point;
+	cout << "PointObstacle constructed" << endl;
+}

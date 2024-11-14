@@ -1,9 +1,10 @@
+#pragma once
 #include <X11/Xlib.h>
 class Entity
 {
 public:
 	float x, y;
-	virtual void draw(Display*, Window , GC )=0;
-	virtual void execute()=0;
+	void draw(Display*, Window , GC );
+	void execute();
 	void attack();
 };

@@ -5,13 +5,14 @@
 using std::deque;
 #include <stdlib.h>  // For drand48() and rand()
 
-import point_obstacle;
+#include "../include/Point Obstacle.hh"
+#include "../include/Line Obstacle.hh"
+#include "../include/Soldier.hh"
+#include "../include/Polybolo.hh"
+
 deque<PointObstacle> point_obstacles;
-import line_obstacle;
 deque<LineObstacle> line_obstacles;
-import soldier;
 deque<Soldier> soldiers;
-import polybolo;
 deque<Polybolo> polybolos;
 
 void setup_obstacles(unsigned char count)
@@ -79,8 +80,12 @@ void gameloop()
 		{
 			soldier.draw(display, window, gc);
 			soldier.execute();
+			/* for (auto& other: soldiers)	handle_collision(soldier, other);
+			for (auto& obstacle: point_obstacles)	handle_collision(soldier, &obstacle);
+			for (auto& obstacle: line_obstacles)	handle_collision(soldier, &obstacle); */
 		}	
 		for (auto& obstacle : point_obstacles)	obstacle.draw(display, window, gc);
+		for (auto& obstacle : line_obstacles)	obstacle.draw(display, window, gc);
 
 		sleep(1);
 	}

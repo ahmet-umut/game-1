@@ -1,5 +1,5 @@
 module;
-#include "../include/gamestate.hh"
+#include "../../include/gamestate.hh"
 #include <X11/Xlib.h>
 export module handle_next_event;
 #include <stdio.h>

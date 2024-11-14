@@ -1,10 +1,6 @@
 module;
-
 #include <X11/Xlib.h>
-
 export module x_utilities;
-
-#include <stdio.h>
 
 export void xsetupwindow(const char* title, Display*& display, Window& window, GC& gc, int screenwidth, int screenheight)
 {

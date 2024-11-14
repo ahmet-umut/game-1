@@ -1,3 +1,4 @@
+#pragma once
 void xsetupwindow(const char* title, Display*& display, Window& window, GC& gc, int screenwidth, int screenheight)
 {
     // Open connection to the X server
