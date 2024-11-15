@@ -1,19 +1,17 @@
 #include "../include/Polybolo.hh"
 #include <iostream>
-#include <X11/Xlib.h>
 using namespace std;
 
-Polybolo::Polybolo()
+Polybolo::Polybolo(double x, double y)
 {
-	cout << "Polybolo constructed" << endl;
-	name[0]='O';
+	position = Eigen::Vector2d(x, y);
 	//direction = rand()%1000/1000.0*2*M_PIf;	//random direction
 }
 void Polybolo::draw(Display*display, Window window, GC gc)
 {
-	cout << "Drawing Polybolo" << endl;
-	cout << "Name: " << name << endl;
-	// Draw the polybolo
+	XRectangle rectangles[2];
+	rectangles[0] = {.x = position.x()-5, .y = position.y()-5, .width = 10, .height = 10};
+	XDrawRectangles(display, window,gc, rectangles,1);
 }
 void Polybolo::execute()
 {

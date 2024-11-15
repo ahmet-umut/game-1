@@ -2,7 +2,14 @@
 #define min(a,s) ((a)<(s) ? (a):(s))
 #define max(a,s) ((a)>(s) ? (a):(s))
 
+#include <iostream>
+using namespace std;
+
 LineSegment::LineSegment(Eigen::Vector2d start, Eigen::Vector2d delta) : start(start), delta(delta) {}
+LineSegment::LineSegment()
+{
+    cout << "Warning: LineSegment created without parameters" << endl;
+}
 
 Eigen::Vector2d LineSegment::end()
 {

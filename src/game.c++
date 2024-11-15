@@ -1,19 +1,24 @@
 #include <iostream>
 #include <unistd.h>	//for sleep and usleep
-#include <X11/Xlib.h>
+#include "../include/xlib.hh"
 #include <deque>
 using std::deque;
 #include <stdlib.h>  // For drand48() and rand()
+#include <eigen3/Eigen/Dense>
 
 #include "../include/Point Obstacle.hh"
 #include "../include/Line Obstacle.hh"
 #include "../include/Soldier.hh"
 #include "../include/Polybolo.hh"
+#include "../include/gamestate.hh"
+#include "../include/functions.hh"
 
 deque<PointObstacle> point_obstacles;
 deque<LineObstacle> line_obstacles;
 deque<Soldier> soldiers;
 deque<Polybolo> polybolos;
+
+using Eigen::Vector2d;
 
 void setup_obstacles(unsigned char count)
 {
@@ -25,11 +30,11 @@ void setup_obstacles(unsigned char count)
 		{
 		case 0:
 			cout << "adding point obstacle" << endl;
-			point_obstacles.emplace_back();
+			point_obstacles.emplace_back(rand()%255, rand()%255);
 			break;
 		case 1:
 			cout << "adding line obstacle" << endl;
-			line_obstacles.emplace_back();
+			line_obstacles.emplace_back(rand()%255, rand()%255,rand()%255, rand()%255);
 			break;
 		}
 	}
@@ -44,13 +49,12 @@ void setup_polybolos(unsigned char count)
 {
 	using namespace std;
 	cout << "setting up " << (int)count << " polybolos" << endl;
-	for (int i = 0; i < count; i++)	polybolos.emplace_back();
+	for (int i = 0; i < count; i++)	polybolos.emplace_back(rand()%255, rand()%255);
 }
 
 Display *display;	Window window;	GC gc;
 
 import handle_next_event;
-#include "../include/gamestate.hh"
 void gameloop()
 {
 	gamestate state = running;
@@ -100,8 +104,8 @@ int main(int argc, char *argv[])
 	// Initialize the random number generator
 	//srand(time(nullptr));
 
-	setup_obstacles(2);
-	setup_soldiers(1);
+	setup_obstacles(3);
+	setup_soldiers(2);
 	setup_polybolos(1);
 
 	gameloop();	//returns when the game is over

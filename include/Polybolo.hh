@@ -1,11 +1,12 @@
 #pragma once
-#include <X11/Xlib.h>
+#include "xlib.hh"
 #include "Entity.hh"
+#include <eigen3/Eigen/Dense>
 class Polybolo : public Entity
 {
 public:
-	char name[2];
-	Polybolo();
+	Eigen::Vector2d position;
+	Polybolo(double x, double y);
 	void draw(Display*display, Window window, GC gc);
 	void execute();
 };

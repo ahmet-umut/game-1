@@ -5,6 +5,7 @@ class LineSegment
 public:
     Eigen::Vector2d start, delta;
     LineSegment(Eigen::Vector2d start, Eigen::Vector2d delta);
+    LineSegment();
 
     Eigen::Vector2d end();
 

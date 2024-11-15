@@ -1,6 +1,6 @@
 #include "../include/Obstacle.hh"
 #include <iostream>
-#include <X11/Xlib.h>
+#include "xlib.hh"
 using namespace std;
 class Obstacle
 {

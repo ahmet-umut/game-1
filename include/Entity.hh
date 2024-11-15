@@ -1,5 +1,5 @@
 #pragma once
-#include <X11/Xlib.h>
+#include "xlib.hh"
 class Entity
 {
 public:

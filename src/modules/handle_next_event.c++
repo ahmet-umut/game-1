@@ -1,6 +1,6 @@
 module;
 #include "../../include/gamestate.hh"
-#include <X11/Xlib.h>
+#include "../../include/xlib.hh"
 export module handle_next_event;
 #include <stdio.h>
 export gamestate handle_next_event(gamestate state, Display* display)
