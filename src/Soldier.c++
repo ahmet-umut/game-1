@@ -2,9 +2,12 @@
 #include <iostream>
 using namespace std;
 
-Soldier::Soldier(float x, float y) : Entity(x,y)
+Soldier::Soldier(deque<Entity*>*trajectiles, double x, double y) : Entity(x,y)
 {
-	trajectile = new Trajectile(x,y,0,255);
+	this->trajectiles = trajectiles;
+	trajectiles->push_back(new Trajectile(x,y,0,255));
+	trajectile_indice = trajectiles->size()-1;
+	((Trajectile*)(trajectiles->at(trajectile_indice)))->velocity = 0;
 	cout << "Soldier constructed" << endl;
 }
 void Soldier::draw(Display*display, Window window, GC gc)
@@ -18,7 +21,8 @@ void Soldier::draw(Display*display, Window window, GC gc)
 void Soldier::execute()
 {
 	position += velocity;
-	trajectile->position = position;
+	//trajectiles->at(trajectile_indice)->position = position;
+	//trajectile->position = position;
 	//cout << "Soldier::execute" << endl;
 }
 void Soldier::select()

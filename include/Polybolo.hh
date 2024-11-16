@@ -8,9 +8,8 @@ class Polybolo : public Entity
 {
 public:
 	Eigen::Vector2d velocity;	double direction;
-	std::deque<Trajectile*>* trajectiles;
 
-	Polybolo(std::deque<Trajectile*>*, double , double , double=0);
+	Polybolo(std::deque<Entity*>*, double , double , double=0);
 
 	void draw(Display*display, Window window, GC gc);
 	void execute();

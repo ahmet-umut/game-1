@@ -4,7 +4,7 @@
 class Trajectile : public Entity
 {
 public:
-	double velocity, direction;
+	double velocity=1, direction;
 	unsigned char lifetime = 228;
 
 	Trajectile(double x, double y, double direction=0, unsigned char lifetime=228);

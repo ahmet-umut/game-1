@@ -2,8 +2,10 @@
 #include <iostream>
 using namespace std;
 
-Polybolo::Polybolo(deque<Trajectile*>*trajectiles, double x, double y, double direction) : Entity(x,y), direction(direction), trajectiles(trajectiles)
-{}
+Polybolo::Polybolo(deque<Entity*>*trajectiles, double x, double y, double direction) : Entity(x,y), direction(direction)
+{
+	this->trajectiles = trajectiles;
+}
 void Polybolo::draw(Display*display, Window window, GC gc)
 {
 	XRectangle rectangles[2];
@@ -27,5 +29,6 @@ Trajectile Polybolo::fire()
 {
 	Trajectile* trajectile = new Trajectile(position.x(), position.y(), direction);
 	trajectiles->push_back(trajectile);
+	cout << "Polybolo::fire" << endl;
 	return *trajectile;
 }

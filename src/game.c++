@@ -46,13 +46,13 @@ void setup_soldiers(unsigned char count)
 {
 	using namespace std;
 	cout << "setting up " << (int)count << " soldiers" << endl;
-	for (int i = 0; i < count; i++)	soldiers.emplace_back(rand()%window_size, rand()%window_size);
+	for (int i = 0; i < count; i++)	soldiers.emplace_back((deque<Entity*>*)&trajectiles, rand()%window_size, rand()%window_size);
 }
 void setup_polyboli(unsigned char count)
 {
 	using namespace std;
 	cout << "setting up " << (int)count << " polybolos" << endl;
-	for (int i = 0; i < count; i++)	polybolos.emplace_back(&trajectiles, rand()%window_size, rand()%window_size);
+	for (int i = 0; i < count; i++)	polybolos.emplace_back((deque<Entity*>*)&trajectiles, rand()%window_size, rand()%window_size);
 }
 
 Display *display;	Window window;	GC gc;
@@ -81,6 +81,7 @@ void gameloop()
 		case end:
 			return;
 		}
+		using namespace std;
 		clock++;
 		//std::cout << "game tick: " << (int)clock << std::endl;
 		
@@ -105,9 +106,10 @@ void gameloop()
 		for (auto& obstacle : line_obstacles)	obstacle.draw(display, window, gc);
 		for (auto iterator = trajectiles.begin(); iterator != trajectiles.end();)
 		{
-			(*iterator)->draw(display, window, gc);
-			(*iterator)->execute();
-			if ((*iterator)->lifetime == 0)
+			Trajectile*trajectile = *iterator;
+			trajectile->draw(display, window, gc);
+			trajectile->execute();
+			if (trajectile->lifetime == 0)
 			{
 				delete *iterator;
 				iterator = trajectiles.erase(iterator);

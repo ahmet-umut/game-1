@@ -9,9 +9,9 @@ public:
 	static inline Soldier*selsoldier=nullptr;
 	static constexpr double radius = 11;
 	Eigen::Vector2d velocity = {0,0};	double direction = 0;
-	Trajectile*trajectile;
+	unsigned short trajectile_indice;
 
-	Soldier(float x, float y);
+	Soldier(std::deque<Entity*>*,double,double);
 	void draw(Display*display, Window window, GC gc);
 	void execute();
 	void select();

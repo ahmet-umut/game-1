@@ -10,6 +10,6 @@ void Trajectile::draw(Display*display, Window window, GC gc)
 }
 void Trajectile::execute()
 {
-	position += Eigen::Vector2d(10 * cos(direction), 10 * sin(direction));
+	position += velocity*Eigen::Vector2d(cos(direction), sin(direction));
 	if (lifetime!=255)	lifetime--;	//255 means infinite lifetime
 }

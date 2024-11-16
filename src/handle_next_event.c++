@@ -3,7 +3,7 @@
 using std::deque;
 gamestate handle_next_event(gamestate state, Display* display, deque<Soldier>& soldiers, bool* side_effect)
 {
-	printf("handling next event\n");
+	//printf("handling next event\n");
 	if (XPending(display))
 	{
 		XEvent event;
