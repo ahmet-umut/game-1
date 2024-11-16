@@ -19,5 +19,15 @@ void Soldier::execute()
 {
 	position += velocity;
 	trajectile->position = position;
-	cout << "Soldier::execute" << endl;
+	//cout << "Soldier::execute" << endl;
+}
+void Soldier::select()
+{
+	selsoldier = this;
+	cout << "Soldier::select" << endl;
+}
+bool Soldier::is_around(double x, double y)
+{
+	Eigen::Vector2d point(x,y);
+	return (point - position).norm() < radius;
 }

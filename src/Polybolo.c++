@@ -20,7 +20,7 @@ void Polybolo::draw(Display*display, Window window, GC gc)
 }
 void Polybolo::execute()
 {
-	cout << "Executing Polybolo" << endl;
+	//cout << "Executing Polybolo" << endl;
 	// Execute the polybolo
 }
 Trajectile Polybolo::fire()

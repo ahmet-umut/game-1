@@ -44,7 +44,14 @@ gamestate handle_next_event(gamestate state, Display* display, deque<Soldier>& s
 			switch (event.xbutton.button)
 			{
 			case 1:  // Left mouse button
-				//select(event.xbutton.x, event.xbutton.y);
+				for (auto& soldier : soldiers)
+				{
+					if (soldier.is_around(event.xbutton.x, event.xbutton.y))
+					{
+						soldier.select();
+						break;
+					}
+				}
 				break;
 			}
 			break;
