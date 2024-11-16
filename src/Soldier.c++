@@ -13,7 +13,7 @@ void Soldier::draw(Display*display, Window window, GC gc)
 
 	XDrawPoint(display, window, gc, position.x(), position.y());
 
-	XDrawArc(display, window, gc, position.x()-22, position.y()-22, 2*22, 2*22, 0, 360*64);
+	XDrawArc(display, window, gc, position.x()-radius, position.y()-radius, 2*radius, 2*radius, 0, 360*64);
 }
 void Soldier::execute()
 {

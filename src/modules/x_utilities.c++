@@ -1,5 +1,5 @@
 module;
-#include "../../include/xlib.hh";
+#include "../../include/xlib.hh"
 export module x_utilities;
 
 export void xsetupwindow(const char* title, Display*& display, Window& window, GC& gc, int screenwidth, int screenheight)

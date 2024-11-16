@@ -17,3 +17,12 @@ PointObstacle::PointObstacle(double x, double y) : position(x,y)
 	type = point;
 	cout << "PointObstacle constructed" << endl;
 }
+bool PointObstacle::is_intersecting(Soldier& soldier)
+{
+	return (soldier.position + -position).norm() < 2*Soldier::radius;
+}
+Eigen::Vector2d PointObstacle::correction(Soldier& soldier)
+{
+	cout << "PointObstacle::correction" << endl;
+	return Eigen::Vector2d(0,0);
+}

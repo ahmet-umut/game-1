@@ -45,7 +45,7 @@ void setup_soldiers(unsigned char count)
 	cout << "setting up " << (int)count << " soldiers" << endl;
 	for (int i = 0; i < count; i++)	soldiers.emplace_back(rand()%255, rand()%255);
 }
-void setup_polybolos(unsigned char count)
+void setup_polyboli(unsigned char count)
 {
 	using namespace std;
 	cout << "setting up " << (int)count << " polybolos" << endl;
@@ -61,8 +61,8 @@ void gameloop()
 	unsigned char clock = 0;
 	while (1)
 	{
-		handle_next_event(state, display);
-		switch (state)
+		sleep(1);
+		switch (state=handle_next_event(state, display))
 		{
 		case halt:
 			continue;
@@ -84,14 +84,13 @@ void gameloop()
 		{
 			soldier.draw(display, window, gc);
 			soldier.execute();
-			/* for (auto& other: soldiers)	handle_collision(soldier, other);
 			for (auto& obstacle: point_obstacles)	handle_collision(soldier, &obstacle);
+			for (auto& obstacle: line_obstacles)	handle_collision(soldier, &obstacle);
+			/* for (auto& other: soldiers)	handle_collision(soldier, other);
 			for (auto& obstacle: line_obstacles)	handle_collision(soldier, &obstacle); */
 		}	
 		for (auto& obstacle : point_obstacles)	obstacle.draw(display, window, gc);
 		for (auto& obstacle : line_obstacles)	obstacle.draw(display, window, gc);
-
-		sleep(1);
 	}
 }
 
@@ -106,7 +105,7 @@ int main(int argc, char *argv[])
 
 	setup_obstacles(3);
 	setup_soldiers(2);
-	setup_polybolos(1);
+	setup_polyboli(1);
 
 	gameloop();	//returns when the game is over
 

@@ -19,3 +19,13 @@ LineObstacle::LineObstacle(double x1, double y1, double x2, double y2) : lineSeg
 	type = line;
 	cout << "LineObstacle constructed" << endl;
 }
+bool LineObstacle::is_intersecting(Soldier& soldier)
+{
+	cout << "LineObstacle::is_intersecting" << endl;
+	return false;
+}
+Vector2d LineObstacle::correction(Soldier& soldier)
+{
+	cout << "LineObstacle::correction" << endl;
+	return Vector2d(0,0);
+}
