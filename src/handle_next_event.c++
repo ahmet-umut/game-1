@@ -1,11 +1,7 @@
-module;
-#include "../../include/gamestate.hh"
-#include "../../include/xlib.hh"
-export module handle_next_event;
-#include <stdio.h>
+#include "../include/functions.hh"
 
-using namespace std;
-export gamestate handle_next_event(gamestate state, Display* display)
+using std::deque;
+gamestate handle_next_event(gamestate state, Display* display, deque<Soldier>& soldiers, bool* side_effect)
 {
 	printf("handling next event\n");
 	if (XPending(display))
@@ -33,6 +29,14 @@ export gamestate handle_next_event(gamestate state, Display* display)
 					printf("continuing the game\n");
 					break;
 				}
+				break;
+			case 9:  // Escape key
+				state = end;
+				printf("ending the game\n");
+				break;
+			case 36:  // Enter key
+				if (side_effect)
+					*side_effect = true;
 				break;
 			}
 			break;

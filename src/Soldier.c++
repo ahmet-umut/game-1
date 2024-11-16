@@ -2,10 +2,10 @@
 #include <iostream>
 using namespace std;
 
-Soldier::Soldier(float x, float y) : position(x,y)
+Soldier::Soldier(float x, float y) : Entity(x,y)
 {
+	trajectile = new Trajectile(x,y,0,255);
 	cout << "Soldier constructed" << endl;
-	//direction = rand()%1000/1000.0*2*M_PIf;	//random direction
 }
 void Soldier::draw(Display*display, Window window, GC gc)
 {
@@ -17,5 +17,7 @@ void Soldier::draw(Display*display, Window window, GC gc)
 }
 void Soldier::execute()
 {
+	position += velocity;
+	trajectile->position = position;
 	cout << "Soldier::execute" << endl;
 }

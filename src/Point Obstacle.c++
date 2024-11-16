@@ -15,7 +15,6 @@ void PointObstacle::draw(Display*display, Window window, GC gc)
 PointObstacle::PointObstacle(double x, double y) : position(x,y)
 {
 	type = point;
-	cout << "PointObstacle constructed" << endl;
 }
 bool PointObstacle::is_intersecting(Soldier& soldier)
 {

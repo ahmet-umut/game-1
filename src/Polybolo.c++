@@ -2,7 +2,7 @@
 #include <iostream>
 using namespace std;
 
-Polybolo::Polybolo(double x, double y, double direction) : position(x,y), direction(direction)
+Polybolo::Polybolo(deque<Trajectile*>*trajectiles, double x, double y, double direction) : Entity(x,y), direction(direction), trajectiles(trajectiles)
 {}
 void Polybolo::draw(Display*display, Window window, GC gc)
 {
@@ -22,4 +22,10 @@ void Polybolo::execute()
 {
 	cout << "Executing Polybolo" << endl;
 	// Execute the polybolo
+}
+Trajectile Polybolo::fire()
+{
+	Trajectile* trajectile = new Trajectile(position.x(), position.y(), direction);
+	trajectiles->push_back(trajectile);
+	return *trajectile;
 }
