@@ -50,6 +50,8 @@ void setup_soldiers(unsigned count)
 	using namespace std;
 	cout << "setting up " << (int)count << " soldiers" << endl;
 	for (int i = 0; i < count; i++)	soldiers.emplace_back(&projectiles, rand()%window_size, rand()%window_size);
+	soldiers[0].position = Vector2d(100,100);
+	soldiers[1].position = Vector2d(101,101);
 }
 void setup_polyboli(unsigned count)
 {
@@ -112,6 +114,8 @@ void gameloop()
 		}
 		
 		//draw everything
+		XSetForeground(display, gc, 0x55dddd);
+		XFillRectangle(display, window, gc, 0, 0, window_size, window_size);
 		for (auto& polybolo : polybolos)	polybolo.draw(display, window, gc);
 		for (auto& soldier : soldiers)	soldier.draw(display, window, gc);
 		for (auto& obstacle : point_obstacles)	obstacle.draw(display, window, gc);
@@ -126,7 +130,7 @@ import x_utilities;
 //#include "../include/x utilities.hh"
 int main(int argc, char *argv[])
 {
-	xsetupwindow("ray tracer", display, window, gc, 255,255);
+	xsetupwindow("game", display, window, gc, 255,255);
 
 	// Initialize the random number generator
 	//srand(time(nullptr));

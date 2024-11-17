@@ -3,6 +3,8 @@
 using namespace std;
 void PointObstacle::draw(Display*display, Window window, GC gc)
 {
+	XSetForeground(display, gc, 0x55555d);
+
 	#define indicato 9
 	for (unsigned char cursor = 0; cursor < indicato; cursor++)
 	{
@@ -22,6 +24,6 @@ bool PointObstacle::is_intersecting(Soldier& soldier)
 }
 Eigen::Vector2d PointObstacle::correction(Soldier& soldier)
 {
-	cout << "PointObstacle::correction" << endl;
-	return Eigen::Vector2d(0,0);
+	Eigen::Vector2d posdif = soldier.position + -position;
+	return posdif / posdif.norm() * (Soldier::radius - posdif.norm());
 }

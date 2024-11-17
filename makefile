@@ -18,7 +18,7 @@ game.o: src/game.c++
 handle_next_event.o: src/handle_next_event.c++
 	g++-14 -std=c++20 -c src/handle_next_event.c++
 
-%.o: src/%.c++ include/%.hh
+%.o: src/%.c++
 	g++-14 -std=c++20 -c $<
 
 modules/%.o: src/modules/%.c++

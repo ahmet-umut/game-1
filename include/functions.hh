@@ -1,4 +1,5 @@
 #pragma once
+#include <eigen3/Eigen/Dense>
 #include "Soldier.hh"
 #include "Obstacle.hh"
 #include "Projectile.hh"

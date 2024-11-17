@@ -5,7 +5,7 @@ using namespace Eigen;
 using namespace std;
 void LineObstacle::draw(Display*display, Window window, GC gc)
 {
-	XSetForeground(display, gc, 0);
+	XSetForeground(display, gc, 0x55555d);
 	XDrawLine(display, window, gc, lineSegment.start.x(), lineSegment.start.y(), (lineSegment.start + lineSegment.delta).x(), (lineSegment.start + lineSegment.delta).y());
 }
 LineObstacle::LineObstacle()
@@ -37,6 +37,23 @@ bool LineObstacle::is_intersecting(Soldier& soldier)
 }
 Vector2d LineObstacle::correction(Soldier& soldier)
 {
-	cout << "LineObstacle::correction" << endl;
-	return Vector2d(0,0);
+	Vector2d intersec;
+	Vector2d middle = lineSegment.start + lineSegment.delta / 2;
+	short int v1 = lineSegment.delta.x();
+	short int v2 = lineSegment.delta.y();
+	short int v3 = middle.y() - middle.x() * v2 / v1;
+	short int v4 = soldier.position.y() + soldier.position.x() * v1 / v2;
+	intersec.x() = (v4 - v3) * v1 * v2 / (float)(v1 * v1 + v2 * v2);
+	intersec.y() = intersec.x() * v2 / v1 + v3;
+
+	if (!(intersec.x() < lineSegment.start.x() && intersec.x() > lineSegment.end().x()) || (intersec.x() > lineSegment.start.x() && intersec.x() < lineSegment.end().x()))
+	{
+		Vector2d posdif = soldier.position + -intersec;
+		return posdif / posdif.norm() * (Soldier::radius - posdif.norm());
+	}
+	else
+	{
+		Vector2d posdif = soldier.position + -lineSegment.start;
+		return posdif / posdif.norm() * (Soldier::radius - posdif.norm());
+	}
 }

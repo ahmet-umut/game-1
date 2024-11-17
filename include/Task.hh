@@ -3,7 +3,8 @@
 class Task
 {
 public:
-	static constexpr unsigned short error_tolerance=0;
+	static constexpr unsigned short error_tolerance=1;
+	
 	Entity *entity;
 	enum {null,go,attack} state=null;
 	Eigen::Vector2d location;

@@ -6,7 +6,8 @@ Projectile::Projectile(double x, double y, double direction, unsigned char lifet
 {}
 void Projectile::draw(Display*display, Window window, GC gc)
 {
-	XDrawLine(display, window, gc, position.x(), position.y(), position.x() + 10 * cos(direction), position.y() + 10 * sin(direction));
+	XSetForeground(display, gc, 0x55555d);
+	XDrawLine(display, window, gc, position.x(), position.y(), position.x() + 22 * cos(direction), position.y() + 22 * sin(direction));
 }
 void Projectile::execute()
 {

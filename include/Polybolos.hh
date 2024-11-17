@@ -6,7 +6,8 @@
 class Polybolos : public Combatant
 {
 public:
-	unsigned char cooldown;
+	static constexpr unsigned char cooldowntime = 60;
+	unsigned char cooldown = cooldowntime;
 
 	void draw(Display*display, Window window, GC gc);
 	void execute();
