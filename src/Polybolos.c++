@@ -23,8 +23,12 @@ void Polybolos::draw(Display*display, Window window, GC gc)
 }
 void Polybolos::execute()
 {
-	//cout << "Executing Polybolos" << endl;
-	// Execute the polybolo
+	if (task.state == Task::attack)
+	{
+		direction = atan2(task.target->position.y() - position.y(), task.target->position.x() - position.x());
+		if (!cooldown)	fire();
+	}
+	cooldown++;
 }
 Projectile Polybolos::fire()
 {

@@ -50,7 +50,6 @@ void setup_soldiers(unsigned count)
 	using namespace std;
 	cout << "setting up " << (int)count << " soldiers" << endl;
 	for (int i = 0; i < count; i++)	soldiers.emplace_back(&projectiles, rand()%window_size, rand()%window_size);
-	soldiers[0].velocity = {rand()%2, rand()%2};
 }
 void setup_polyboli(unsigned count)
 {
@@ -111,7 +110,7 @@ void gameloop()
 			}
 			else iterator++;
 		}
-
+		
 		//draw everything
 		for (auto& polybolo : polybolos)	polybolo.draw(display, window, gc);
 		for (auto& soldier : soldiers)	soldier.draw(display, window, gc);

@@ -6,6 +6,8 @@
 class Polybolos : public Combatant
 {
 public:
+	unsigned char cooldown;
+
 	void draw(Display*display, Window window, GC gc);
 	void execute();
 	bool is_around(double x, double y) override;

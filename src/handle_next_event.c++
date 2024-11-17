@@ -45,15 +45,30 @@ gamestate handle_next_event(gamestate state, Display* display, deque<Soldier>& s
 			switch (event.xbutton.button)
 			{
 			case 1:  // Left mouse button
-				for (auto& soldier : soldiers)	if (soldier.select({event.xbutton.x, event.xbutton.y}))	break;
-				for (auto& polybolos : polyboli)	if (polybolos.select({event.xbutton.x, event.xbutton.y}))	break;
+				Combatant::selected_combatant = nullptr;
+				for (auto& soldier : soldiers)	if (Combatant::selected_combatant = soldier.select({event.xbutton.x, event.xbutton.y}))	goto caseend;
+				for (auto& polybolos : polyboli)	if (Combatant::selected_combatant = polybolos.select({event.xbutton.x, event.xbutton.y}))	goto caseend;
+				caseend:
 				break;
 			case 3:  // Right mouse button
 				Combatant*combatant = Combatant::selected_combatant;
 				if (combatant)
 				{
-					combatant->task.location = {event.xbutton.x, event.xbutton.y};
-					combatant->task.state = Task::go;
+					Combatant* target = nullptr;
+					for (auto& soldier : soldiers)	if (target = soldier.select({event.xbutton.x, event.xbutton.y}))	goto after_select;
+					for (auto& polybolos : polyboli)	if (target = polybolos.select({event.xbutton.x, event.xbutton.y}))	goto after_select;
+					after_select:
+					if (target)
+					{
+						combatant->task.target = target;
+						combatant->task.state = Task::attack;
+						printf("attacking\n");
+					}
+					else
+					{
+						combatant->task.location = {event.xbutton.x, event.xbutton.y};
+						combatant->task.state = Task::go;
+					}
 					break;
 				}
 				break;

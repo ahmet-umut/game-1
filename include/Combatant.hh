@@ -11,14 +11,10 @@ public:
 
 	Combatant(std::unordered_multimap<Combatant*,Projectile*>* projectiles, double x,double y) : Entity(x,y), task(this), projectiles(projectiles) {}
 
-	bool select(Eigen::Vector2d clicked_position)
+	Combatant* select(Eigen::Vector2d clicked_position)
 	{
-		if (is_around(clicked_position))
-		{
-			selected_combatant = this;
-			return true;
-		}
-		return false;
+		if (is_around(clicked_position))	return this;
+		return nullptr;
 	}
 	virtual bool is_around(double x, double y)=0;
 	bool is_around(Eigen::Vector2d point)

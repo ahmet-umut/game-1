@@ -2,6 +2,7 @@
 #include "Soldier.hh"
 #include "Obstacle.hh"
 #include "Projectile.hh"
+#include "Polybolos.hh"
 #include "../include/gamestate.hh"
 #include <deque>
 void handle_collision(Soldier& soldier, Obstacle* obstacle);

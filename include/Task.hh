@@ -5,8 +5,9 @@ class Task
 public:
 	static constexpr unsigned short error_tolerance=0;
 	Entity *entity;
-	enum {null,go} state=null;
+	enum {null,go,attack} state=null;
 	Eigen::Vector2d location;
+	Entity*target=nullptr;
 
 	Task(Entity*entity) : entity(entity) {}
 	void assess()
