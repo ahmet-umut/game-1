@@ -10,6 +10,7 @@ void LineObstacle::draw(Display*display, Window window, GC gc)
 }
 LineObstacle::LineObstacle()
 {
+	cout << "LineObstacle::LineObstacle(), default initiation" << endl;
 	type = line;
 }
 LineObstacle::LineObstacle(double x1, double y1, double x2, double y2) : lineSegment(Vector2d(x1,y1), Vector2d(x2,y2))
@@ -18,7 +19,20 @@ LineObstacle::LineObstacle(double x1, double y1, double x2, double y2) : lineSeg
 }
 bool LineObstacle::is_intersecting(Soldier& soldier)
 {
-	//cout << "LineObstacle::is_intersecting" << endl;
+	Vector2d middle = lineSegment.start + lineSegment.delta / 2;
+	Vector2d intersec;
+	short int v1 = lineSegment.delta.x();
+	short int v2 = lineSegment.delta.y();
+	short int v3 = middle.y() - middle.x() * v2 / v1;
+	short int v4 = soldier.position.y() + soldier.position.x() * v1 / v2;
+	intersec.x() = (v4 - v3) * v1 * v2 / (float)(v1 * v1 + v2 * v2);
+	intersec.y() = intersec.x() * v2 / v1 + v3;
+
+	((Soldier*)(&soldier))->is_around(intersec);
+	((Combatant*)(&soldier))->is_around(intersec);
+
+	if (soldier.is_around(lineSegment.start) || soldier.is_around(lineSegment.end())) return true;
+	if (soldier.is_around(intersec) && ((intersec.x() < lineSegment.start.x() && intersec.x() > lineSegment.end().x()) || (intersec.x() > lineSegment.start.x() && intersec.x() < lineSegment.end().x()))) return true;
 	return false;
 }
 Vector2d LineObstacle::correction(Soldier& soldier)

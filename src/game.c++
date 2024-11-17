@@ -3,27 +3,30 @@
 #include "../include/xlib.hh"
 #include <deque>
 using std::deque;
+#include <unordered_map>
+using std::unordered_multimap;
 #include <stdlib.h>  // For drand48() and rand()
 #include <eigen3/Eigen/Dense>
 
 #include "../include/Point Obstacle.hh"
 #include "../include/Line Obstacle.hh"
 #include "../include/Soldier.hh"
-#include "../include/Polybolo.hh"
+#include "../include/Polybolos.hh"
 #include "../include/gamestate.hh"
 #include "../include/functions.hh"
 
 deque<PointObstacle> point_obstacles;
 deque<LineObstacle> line_obstacles;
 deque<Soldier> soldiers;
-deque<Polybolo> polybolos;
-deque<Trajectile*> trajectiles;
+deque<Polybolos> polybolos;
+
+unordered_multimap <Combatant*,Projectile*> projectiles;	//used a map here because we do not want to lose the ownership of some projectiles
 
 #define window_size 255
 
 using Eigen::Vector2d;
 
-void setup_obstacles(unsigned char count)
+void setup_obstacles(unsigned count)
 {
 	using namespace std;
 	cout << "setting up " << (int)count << " obstacles" << endl;
@@ -42,17 +45,18 @@ void setup_obstacles(unsigned char count)
 		}
 	}
 }
-void setup_soldiers(unsigned char count)
+void setup_soldiers(unsigned count)
 {
 	using namespace std;
 	cout << "setting up " << (int)count << " soldiers" << endl;
-	for (int i = 0; i < count; i++)	soldiers.emplace_back((deque<Entity*>*)&trajectiles, rand()%window_size, rand()%window_size);
+	for (int i = 0; i < count; i++)	soldiers.emplace_back(&projectiles, rand()%window_size, rand()%window_size);
+	soldiers[0].velocity = {rand()%2, rand()%2};
 }
-void setup_polyboli(unsigned char count)
+void setup_polyboli(unsigned count)
 {
 	using namespace std;
 	cout << "setting up " << (int)count << " polybolos" << endl;
-	for (int i = 0; i < count; i++)	polybolos.emplace_back((deque<Entity*>*)&trajectiles, rand()%window_size, rand()%window_size);
+	for (int i = 0; i < count; i++)	polybolos.emplace_back(&projectiles, rand()%window_size, rand()%window_size);
 }
 
 Display *display;	Window window;	GC gc;
@@ -66,12 +70,12 @@ void test()
 void gameloop()
 {
 	gamestate state = running;
-	unsigned char clock = 0;
+	uint clock = 0;
 	bool test_flag = false;
 	while (1)
 	{
 		usleep(1000000/60);	//60fps
-		switch (state=handle_next_event(state, display, soldiers, &test_flag))
+		switch (state=handle_next_event(state, display, soldiers, polybolos, &test_flag))
 		{
 		case halt:
 			continue;
@@ -89,35 +93,33 @@ void gameloop()
 		
 		XClearWindow(display, window);
 
-		for (auto& polybolo : polybolos)
-		{
-			polybolo.draw(display, window, gc);
-			polybolo.execute();
-		}
+		for (auto& polybolo : polybolos)	polybolo.execute();
 		for (auto& soldier : soldiers)
 		{
-			soldier.draw(display, window, gc);
 			soldier.execute();
 			for (auto& obstacle: point_obstacles)	handle_collision(soldier, &obstacle);
 			for (auto& obstacle: line_obstacles)	handle_collision(soldier, &obstacle);
 			for (auto& other: soldiers)	handle_collision(soldier, other);
-		}	
-		for (auto& obstacle : point_obstacles)	obstacle.draw(display, window, gc);
-		for (auto& obstacle : line_obstacles)	obstacle.draw(display, window, gc);
-		for (auto iterator = trajectiles.begin(); iterator != trajectiles.end();)
+		}
+		for (auto iterator = projectiles.begin(); iterator != projectiles.end();)
 		{
-			Trajectile*trajectile = *iterator;
-			trajectile->draw(display, window, gc);
-			trajectile->execute();
-			if (trajectile->lifetime == 0)
+			iterator->second->execute();
+			if (iterator->second->lifetime == 0)
 			{
-				delete *iterator;
-				iterator = trajectiles.erase(iterator);
+				delete iterator->second;
+				iterator = projectiles.erase(iterator);
 			}
 			else iterator++;
 		}
-		std::string trajectile_count = "trajectile count on the scene: " + std::to_string(trajectiles.size());
-		XDrawString(display, window, gc, 10, 10, trajectile_count.c_str(), trajectile_count.size());
+
+		//draw everything
+		for (auto& polybolo : polybolos)	polybolo.draw(display, window, gc);
+		for (auto& soldier : soldiers)	soldier.draw(display, window, gc);
+		for (auto& obstacle : point_obstacles)	obstacle.draw(display, window, gc);
+		for (auto& obstacle : line_obstacles)	obstacle.draw(display, window, gc);
+		for (auto &&[combatant, projectile] : projectiles)	projectile->draw(display, window, gc);
+		std::string Projectile_count = "Projectile count on the scene: " + std::to_string(projectiles.size());
+		XDrawString(display, window, gc, 10, 10, Projectile_count.c_str(), Projectile_count.size());
 	}
 }
 
@@ -131,7 +133,7 @@ int main(int argc, char *argv[])
 	//srand(time(nullptr));
 
 	setup_obstacles(3);
-	setup_soldiers(2);
+	setup_soldiers(3);
 	setup_polyboli(1);
 
 	gameloop();	//returns when the game is over

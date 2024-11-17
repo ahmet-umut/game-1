@@ -82,10 +82,10 @@ int main() {
 		}
 	}
 
-	deque<Polybolo>polybolos;
+	deque<Polybolos>polybolos;
 	for (unsigned char polybolo = 0; polybolo < nopolybolos; polybolo++)
 	{
-		polybolos.push_back(Polybolo());
+		polybolos.push_back(Polybolos());
 	}
 
 	enum {debugmode, gamemode, armymode} mode = gamemode;
@@ -125,7 +125,7 @@ int main() {
 						break;
 
 					case 39:  // 's' key
-						for (Polybolo& polybolo : polybolos) {
+						for (Polybolos& polybolo : polybolos) {
 							polybolo.attack();
 						}
 						break;
@@ -207,7 +207,7 @@ int main() {
 
 		XClearWindow(display, window);
 
-		for (Polybolo& polybolo : polybolos)	polybolo.draw();
+		for (Polybolos& polybolo : polybolos)	polybolo.draw();
 		
 		for (Soldier& soldier0 : soldiers)
 		{

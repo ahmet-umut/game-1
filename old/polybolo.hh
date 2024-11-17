@@ -1,13 +1,13 @@
 #include "entity.hh"
-class Polybolo
+class Polybolos
 {
 public:
 	Vector position, velocity = {0,0};
 	float direction;
-	deque<Trajectile> trajects;
+	deque<Projectile> trajects;
 	deque<Spear> spears;
 	unsigned char defence=0;
-	Polybolo()
+	Polybolos()
 	{
 		position = {rand()%800, rand()%600};
 		//direction = rand()%1000/1000.0*2*M_PIf;	//random direction

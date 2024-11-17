@@ -1,19 +1,18 @@
 #pragma once
-#include "Entity.hh"
-#include "Trajectile.hh"
+#include "Combatant.hh"
 #include "xlib.hh"
 #include <eigen3/Eigen/Core>
-class Soldier : public Entity
+class Soldier : public Combatant
 {
 public:
-	static inline Soldier*selsoldier=nullptr;
 	static constexpr double radius = 11;
-	Eigen::Vector2d velocity = {0,0};	double direction = 0;
-	unsigned short trajectile_indice;
+	Eigen::Vector2d velocity = {0,0};
 
-	Soldier(std::deque<Entity*>*,double,double);
+	Soldier(std::unordered_multimap<Combatant*,Projectile*>* projectiles, double x, double y);
+
 	void draw(Display*display, Window window, GC gc);
 	void execute();
-	void select();
-	bool is_around(double x, double y);
+
+	using Combatant::is_around;
+	bool is_around(double x, double y) override;
 };

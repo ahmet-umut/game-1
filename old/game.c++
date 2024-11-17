@@ -9,7 +9,7 @@
 
 deque<Soldier> soldiers;
 deque<Obstacle&> obstacles;
-deque<Polybolo> polybolos;
+deque<Polybolos> polybolos;
 
 // Selects a soldier if the mouse is over it and clicked
 void select(float x, float y)
@@ -46,10 +46,10 @@ void setupobstacles()
 }
 void setuppolybolos()
 {
-	deque<Polybolo>polybolos;
+	deque<Polybolos>polybolos;
 	for (unsigned char polybolo = 0; polybolo < polybolocount; polybolo++)
 	{
-		polybolos.push_back(Polybolo());
+		polybolos.push_back(Polybolos());
 	}
 }
 

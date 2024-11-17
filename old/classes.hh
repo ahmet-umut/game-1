@@ -33,10 +33,10 @@ public:
 	}
 };
 
-class Polybolo : public Longlive
+class Polybolos : public Longlive
 {
 public:
-	/* ~Polybolo()	//need to delete them manually since they are not dynamically allocated
+	/* ~Polybolos()	//need to delete them manually since they are not dynamically allocated
 	{
 		for (auto iterator = shortlis.begin(); iterator != shortlis.end(); ++iterator)
 			for (auto&&trajecti: trajects)
@@ -90,7 +90,7 @@ public:
 
 	Soldier() : Longlive()
 	{
-		//Vector trajectile_start = position + Vector::fromPolar(10, direction+M_PI/2);
+		//Vector Projectile_start = position + Vector::fromPolar(10, direction+M_PI/2);
 		cout << shortlis.size() << endl;
 		spear = new Spear(position.x, position.y, direction);
 		shortlis.push_back(spear);

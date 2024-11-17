@@ -1,7 +1,8 @@
 #include "../include/functions.hh"
+#include "../include/Polybolos.hh"
 
 using std::deque;
-gamestate handle_next_event(gamestate state, Display* display, deque<Soldier>& soldiers, bool* side_effect)
+gamestate handle_next_event(gamestate state, Display* display, deque<Soldier>& soldiers, deque<Polybolos>& polyboli, bool* side_effect)
 {
 	//printf("handling next event\n");
 	if (XPending(display))
@@ -44,13 +45,16 @@ gamestate handle_next_event(gamestate state, Display* display, deque<Soldier>& s
 			switch (event.xbutton.button)
 			{
 			case 1:  // Left mouse button
-				for (auto& soldier : soldiers)
+				for (auto& soldier : soldiers)	if (soldier.select({event.xbutton.x, event.xbutton.y}))	break;
+				for (auto& polybolos : polyboli)	if (polybolos.select({event.xbutton.x, event.xbutton.y}))	break;
+				break;
+			case 3:  // Right mouse button
+				Combatant*combatant = Combatant::selected_combatant;
+				if (combatant)
 				{
-					if (soldier.is_around(event.xbutton.x, event.xbutton.y))
-					{
-						soldier.select();
-						break;
-					}
+					combatant->task.location = {event.xbutton.x, event.xbutton.y};
+					combatant->task.state = Task::go;
+					break;
 				}
 				break;
 			}

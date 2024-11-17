@@ -2,33 +2,27 @@
 #include <iostream>
 using namespace std;
 
-Soldier::Soldier(deque<Entity*>*trajectiles, double x, double y) : Entity(x,y)
+Soldier::Soldier(unordered_multimap<Combatant*,Projectile*>* projectiles, double x, double y) : Combatant(projectiles, x, y)
 {
-	this->trajectiles = trajectiles;
-	trajectiles->push_back(new Trajectile(x,y,0,255));
-	trajectile_indice = trajectiles->size()-1;
-	((Trajectile*)(trajectiles->at(trajectile_indice)))->velocity = 0;
-	cout << "Soldier constructed" << endl;
+	projectiles->insert({this, new Projectile(x,y,0,255)});	//the inserted projectile is the soldier's spear
 }
 void Soldier::draw(Display*display, Window window, GC gc)
 {
 	XSetForeground(display, gc, 0);
-
 	XDrawPoint(display, window, gc, position.x(), position.y());
-
 	XDrawArc(display, window, gc, position.x()-radius, position.y()-radius, 2*radius, 2*radius, 0, 360*64);
 }
 void Soldier::execute()
 {
 	position += velocity;
-	//trajectiles->at(trajectile_indice)->position = position;
-	//trajectile->position = position;
-	//cout << "Soldier::execute" << endl;
-}
-void Soldier::select()
-{
-	selsoldier = this;
-	cout << "Soldier::select" << endl;
+	projectiles->find(this)->second->position = position;
+
+	task.assess();
+	switch (task.state)
+	{
+	case Task::go:
+		velocity = (task.location - position).normalized();
+	}
 }
 bool Soldier::is_around(double x, double y)
 {
