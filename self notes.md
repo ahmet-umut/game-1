@@ -1,15 +1,15 @@
-Agent.assign(Task)
-Agent.assign(x) for x in task type
+	Agent.assign(Task)
+	Agent.assign(x) for x in task type
 
-getter
-direct access
-	?
+	getter
+	direct access
+		?
 
-setter
-direct access*
+	setter
+	direct access*
 
-hitpoints	decremented
-defence	attack	probabilities*
+	hitpoints	decremented
+	defence	attack	probabilities*
 
 	THINGS TO ADD
 	1	armies and formations
