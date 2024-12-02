@@ -11,7 +11,7 @@ direct access*
 hitpoints	decremented
 defence	attack	probabilities*
 
-THINGS TO ADD
+	THINGS TO ADD
 	1	armies and formations
 	2
 	3	other entity types
